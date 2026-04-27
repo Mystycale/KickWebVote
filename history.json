@@ -1,0 +1,510 @@
+[
+  {
+    "poll_id": "A1611E45",
+    "question": "Anime para ver",
+    "options": [
+      "Kimetsu",
+      "Naruto",
+      "One piece",
+      "Cyberpunk"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-27T00:48:51.712045",
+    "ended_at": "2026-04-27T00:50:28.354628",
+    "total_votes": 0,
+    "counts": {
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "Kimetsu",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 2,
+        "label": "Naruto",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 3,
+        "label": "One piece",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 4,
+        "label": "Cyberpunk",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {}
+  },
+  {
+    "poll_id": "A727A30C",
+    "question": "Prueba",
+    "options": [
+      "Kimetsu",
+      "Onepiece"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-27T00:52:10.972916",
+    "ended_at": "2026-04-27T00:53:57.637311",
+    "total_votes": 0,
+    "counts": {
+      "1": 0,
+      "2": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "Kimetsu",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 2,
+        "label": "Onepiece",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {}
+  },
+  {
+    "poll_id": "40AC97F1",
+    "question": "A",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 3,
+    "started_at": "2026-04-27T01:27:40.242261",
+    "ended_at": "2026-04-27T01:28:24.540982",
+    "total_votes": 0,
+    "counts": {
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "1",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 2,
+        "label": "2",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 3,
+        "label": "3",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 4,
+        "label": "4",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {}
+  },
+  {
+    "poll_id": "1DCBCAB9",
+    "question": "Prueba",
+    "options": [
+      "Ki",
+      "Do"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-27T02:02:19.028881",
+    "ended_at": "2026-04-27T02:03:01.612434",
+    "total_votes": 0,
+    "counts": {
+      "1": 0,
+      "2": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "Ki",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 2,
+        "label": "Do",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {}
+  },
+  {
+    "poll_id": "5CB190A6",
+    "question": "prueba",
+    "options": [
+      "1",
+      "12"
+    ],
+    "channel": "https://kick.com/hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-27T02:03:51.212587",
+    "ended_at": "2026-04-27T02:04:27.932187",
+    "total_votes": 0,
+    "counts": {
+      "1": 0,
+      "2": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "1",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 2,
+        "label": "12",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {}
+  },
+  {
+    "poll_id": "F25EE4B2",
+    "question": "prueba",
+    "options": [
+      "a",
+      "b"
+    ],
+    "channel": "kick.com/hqrdnoise",
+    "max_votes_per_user": 3,
+    "started_at": "2026-04-27T02:05:19.886105",
+    "ended_at": "2026-04-27T02:05:37.179256",
+    "total_votes": 0,
+    "counts": {
+      "1": 0,
+      "2": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "a",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 2,
+        "label": "b",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {}
+  },
+  {
+    "poll_id": "23D2FD70",
+    "question": "Prueba",
+    "options": [
+      "A",
+      "B"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-27T02:10:05.914006",
+    "ended_at": "2026-04-27T02:10:25.834532",
+    "total_votes": 0,
+    "counts": {
+      "1": 0,
+      "2": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "A",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 2,
+        "label": "B",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {}
+  },
+  {
+    "poll_id": "39D9D6CE",
+    "question": "Prueba",
+    "options": [
+      "A",
+      "B"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-27T02:10:36.546329",
+    "ended_at": "2026-04-27T02:10:42.826439",
+    "total_votes": 0,
+    "counts": {
+      "1": 0,
+      "2": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "A",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 2,
+        "label": "B",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {}
+  },
+  {
+    "poll_id": "B79676B5",
+    "question": "aaaaa",
+    "options": [
+      "1",
+      "2"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-27T02:17:56.620709",
+    "ended_at": "2026-04-27T02:18:08.147259",
+    "total_votes": 0,
+    "counts": {
+      "1": 0,
+      "2": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "1",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 2,
+        "label": "2",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {}
+  },
+  {
+    "poll_id": "3D388245",
+    "question": "das",
+    "options": [
+      "a",
+      "aa"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-27T02:23:10.818739",
+    "ended_at": "2026-04-27T02:23:16.530640",
+    "total_votes": 0,
+    "counts": {
+      "1": 0,
+      "2": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "a",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 2,
+        "label": "aa",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {}
+  },
+  {
+    "poll_id": "EF768643",
+    "question": "ewar",
+    "options": [
+      "a",
+      "b"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-27T02:28:10.300055",
+    "ended_at": "2026-04-27T02:28:25.514877",
+    "total_votes": 0,
+    "counts": {
+      "1": 0,
+      "2": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "a",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      },
+      {
+        "index": 2,
+        "label": "b",
+        "votes": 0,
+        "percent": 0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {}
+  },
+  {
+    "poll_id": "69D2D834",
+    "question": "Anime",
+    "options": [
+      "Kimetsu",
+      "Naruto"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-27T02:34:21.210924",
+    "ended_at": "2026-04-27T02:34:46.921843",
+    "total_votes": 1,
+    "counts": {
+      "1": 1,
+      "2": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "Kimetsu",
+        "votes": 1,
+        "percent": 100.0,
+        "voters": [
+          "mystycc"
+        ]
+      },
+      {
+        "index": 2,
+        "label": "Naruto",
+        "votes": 0,
+        "percent": 0.0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {
+      "1": [
+        "mystycc"
+      ]
+    }
+  },
+  {
+    "poll_id": "5F8724B3",
+    "question": "Anime",
+    "options": [
+      "Kimetsu",
+      "Naruto",
+      "Dragon ball",
+      "S"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-27T16:56:53.131568",
+    "ended_at": "2026-04-27T17:04:01.320799",
+    "total_votes": 1,
+    "counts": {
+      "1": 1,
+      "2": 0,
+      "3": 0,
+      "4": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "Kimetsu",
+        "votes": 1,
+        "percent": 100.0,
+        "voters": [
+          "mystycc"
+        ]
+      },
+      {
+        "index": 2,
+        "label": "Naruto",
+        "votes": 0,
+        "percent": 0.0,
+        "voters": []
+      },
+      {
+        "index": 3,
+        "label": "Dragon ball",
+        "votes": 0,
+        "percent": 0.0,
+        "voters": []
+      },
+      {
+        "index": 4,
+        "label": "S",
+        "votes": 0,
+        "percent": 0.0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {
+      "1": [
+        "mystycc"
+      ]
+    }
+  }
+]
