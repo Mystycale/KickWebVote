@@ -203,6 +203,7 @@ class PollCreateRequest(BaseModel):
 # ---------------------------------------------------------------------------
 @app.post("/api/session")
 async def create_session(req: SessionRequest):
+    print(f"\n[API] Recibida solicitud de conexión para: {req.channel}", flush=True)
     if not req.channel:
         raise HTTPException(400, "Channel name required")
     

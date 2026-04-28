@@ -506,5 +506,139 @@
         "mystycc"
       ]
     }
+  },
+  {
+    "poll_id": "7FA261C7",
+    "question": "Anime",
+    "options": [
+      "Kimetsu",
+      "Naruto"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-27T23:34:04.222668",
+    "ended_at": "2026-04-27T23:34:36.622199",
+    "total_votes": 1,
+    "counts": {
+      "1": 1,
+      "2": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "Kimetsu",
+        "votes": 1,
+        "percent": 100.0,
+        "voters": [
+          "mystycc"
+        ]
+      },
+      {
+        "index": 2,
+        "label": "Naruto",
+        "votes": 0,
+        "percent": 0.0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {
+      "1": [
+        "mystycc"
+      ]
+    }
+  },
+  {
+    "poll_id": "2191FBA9",
+    "question": "Anime",
+    "options": [
+      "Kimetsu",
+      "Naruto"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-27T23:38:25.224211",
+    "ended_at": "2026-04-27T23:38:35.636839",
+    "total_votes": 1,
+    "counts": {
+      "1": 0,
+      "2": 1
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "Kimetsu",
+        "votes": 0,
+        "percent": 0.0,
+        "voters": []
+      },
+      {
+        "index": 2,
+        "label": "Naruto",
+        "votes": 1,
+        "percent": 100.0,
+        "voters": [
+          "mystycc"
+        ]
+      }
+    ],
+    "voters_by_option": {
+      "2": [
+        "mystycc"
+      ]
+    }
+  },
+  {
+    "poll_id": "BED6CAEF",
+    "question": "Anime",
+    "options": [
+      "Kimetsu",
+      "Naruto",
+      "A"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 2,
+    "started_at": "2026-04-27T23:38:45.197458",
+    "ended_at": "2026-04-27T23:39:02.926686",
+    "total_votes": 2,
+    "counts": {
+      "1": 1,
+      "2": 0,
+      "3": 1
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "Kimetsu",
+        "votes": 1,
+        "percent": 50.0,
+        "voters": [
+          "mystycc"
+        ]
+      },
+      {
+        "index": 2,
+        "label": "Naruto",
+        "votes": 0,
+        "percent": 0.0,
+        "voters": []
+      },
+      {
+        "index": 3,
+        "label": "A",
+        "votes": 1,
+        "percent": 50.0,
+        "voters": [
+          "mystycc"
+        ]
+      }
+    ],
+    "voters_by_option": {
+      "1": [
+        "mystycc"
+      ],
+      "3": [
+        "mystycc"
+      ]
+    }
   }
 ]

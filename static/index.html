@@ -1555,8 +1555,8 @@ function updateActiveView(data) {
     if (activeChart) {
       const counts = data.counts || {};
       activeChart.data.labels = data.options;
-      activeChart.data.datasets[0].data = data.options.map((_, i) => counts[i+1] || 0);
-      activeChart.update('none');
+      activeChart.data.datasets[0].data = data.options.map((_, i) => counts[String(i+1)] || counts[i+1] || 0);
+      activeChart.update();
     }
 
     if (data.recent_voters) {

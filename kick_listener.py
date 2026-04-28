@@ -22,16 +22,26 @@ async def kick_ws_listener(
     """
     async with async_playwright() as p:
         try:
-            print(f"[Listener] Intentando lanzar Chromium (headless={headless})...", flush=True)
+            print(f"[Listener] Intentando lanzar Google Chrome local (headless={headless})...", flush=True)
             browser = await p.chromium.launch(
+                channel="chrome",
                 headless=headless,
                 args=["--disable-blink-features=AutomationControlled"]
             )
-            print("[Listener] Navegador lanzado con éxito.", flush=True)
-        except Exception as e:
-            print(f"\n[ERROR CRÍTICO] No se pudo lanzar el navegador: {e}", flush=True)
-            print("Asegúrate de haber ejecutado: playwright install chromium\n", flush=True)
-            return
+            print("[Listener] Google Chrome lanzado con éxito.", flush=True)
+        except Exception as e_chrome:
+            print(f"[Listener] Chrome no disponible ({e_chrome}). Intentando con Microsoft Edge...", flush=True)
+            try:
+                browser = await p.chromium.launch(
+                    channel="msedge",
+                    headless=headless,
+                    args=["--disable-blink-features=AutomationControlled"]
+                )
+                print("[Listener] Microsoft Edge lanzado con éxito.", flush=True)
+            except Exception as e_edge:
+                print(f"\n[ERROR CRÍTICO] No se pudo lanzar ni Chrome ni Edge: {e_edge}", flush=True)
+                print("Asegúrate de tener Google Chrome o Microsoft Edge instalados.\n", flush=True)
+                return
 
         context = await browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
