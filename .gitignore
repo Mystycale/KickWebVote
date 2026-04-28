@@ -1,0 +1,21 @@
+# Entornos virtuales
+venv/
+env/
+.venv/
+
+# Cache de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Datos del programa
+history.json
+polls/
+
+# IDEs y Editores
+.vscode/
+.idea/
+
+# Sistema
+.DS_Store
+Thumbs.db
