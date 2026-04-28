@@ -3,88 +3,67 @@
 ============================================================
 
 Este programa permite crear votaciones en tiempo real para tu 
-chat de Kick.com, utilizando un navegador automatizado para 
-leer los mensajes y una interfaz web para gestionar las 
-encuestas y ver los resultados.
+chat de Kick.com, utilizando tu propio navegador para leer 
+los mensajes y una interfaz web para gestionar todo.
 
 ------------------------------------------------------------
 1. REQUISITOS PREVIOS
 ------------------------------------------------------------
 
 - Python 3.10 o superior instalado.
-- Google Chrome o Microsoft Edge instalado (El programa usará 
-  preferiblemente tu navegador Chrome local).
-- Node.js instalado (Opcional, para compartir el servidor).
+- Google Chrome o Microsoft Edge instalado.
+- Node.js (Opcional, para compartir el servidor).
 
 ------------------------------------------------------------
-2. INSTALACIÓN
+2. INSTALACIÓN Y EJECUCIÓN (ONE-CLICK)
 ------------------------------------------------------------
 
-Antes de ejecutarlo por primera vez, abre una terminal en la 
-carpeta del proyecto y ejecuta:
+No necesitas instalar nada manualmente. El programa lo hará 
+por ti la primera vez que lo abras:
 
-1. Instalar librerías necesarias:
-   pip install -r requirements.txt
+En WINDOWS:
+1. Haz doble clic en el archivo: iniciar_todo.bat
+2. Espera a que termine la instalación automática.
 
-2. Preparar el motor del navegador:
-   playwright install
+En LINUX:
+1. Dale permisos al archivo: chmod +x iniciar_todo.sh
+2. Ejecútalo: ./iniciar_todo.sh
 
 ------------------------------------------------------------
-3. CÓMO EJECUTAR EL PROGRAMA
+3. CÓMO USAR EL PROGRAMA
 ------------------------------------------------------------
 
-Para garantizar la estabilidad en Windows y evitar errores, 
-utiliza siempre el lanzador especializado:
-
-   python run.py
-
-Una vez ejecutado:
-1. Abre tu navegador en: http://127.0.0.1:8000
+Una vez iniciado el servidor:
+1. Entra en tu navegador a: http://127.0.0.1:8000
 2. Introduce el nombre de tu canal de Kick.
-3. Se abrirá automáticamente una ventana de tu navegador local 
-   (Chrome o Edge) conectada al chat. NO CIERRES esta ventana, 
-   ya que es la que "lee" los votos.
+3. Se abrirá una ventana de Chrome/Edge conectada al chat. 
+   ¡No la cierres! Es la que captura los votos.
 
 ------------------------------------------------------------
-4. FUNCIONAMIENTO DE LAS VOTACIONES
+4. COMPARTIR Y PRIVACIDAD (IMPORTANTE)
 ------------------------------------------------------------
 
-- Crear encuestas: Desde la web, ve a "Create New Poll".
-- Votar: Los espectadores escriben el NÚMERO de la opción 
-  en el chat (ejemplo: "1"). Las barras de progreso se 
-  actualizan en tiempo real.
-- Historial: Se guarda en 'history.json' y se puede ver 
-  en la sección "History" de la web.
+Para que otras personas controlen la votación por internet:
+
+1. PROTEGE TU IP: Enciende una VPN (como ProtonVPN o 
+   Cloudflare WARP) ANTES de abrir el programa.
+2. El archivo 'iniciar_todo' abrirá automáticamente una 
+   ventana de Ngrok con un enlace público.
+3. Pasa ese enlace (.ngrok-free.app) a tus amigos.
 
 ------------------------------------------------------------
-5. COMPARTIR Y PRIVACIDAD (IMPORTANTE)
+5. SOLUCIÓN DE PROBLEMAS (FAQ)
 ------------------------------------------------------------
 
-Si quieres que otras personas controlen la votación o vean los 
-resultados desde fuera de tu casa, puedes usar Ngrok:
+* ¿Por qué se abre una ventana de Chrome sola?
+  Es normal, es el "lector" de votos. Debe estar abierta.
 
-1. PROTEGE TU IP: Antes de nada, enciende una VPN (como 
-   ProtonVPN o Cloudflare WARP) para que Ngrok no muestre 
-   tu ubicación real.
-2. Abre una nueva terminal y ejecuta:
-   npx.cmd ngrok http 8000
-3. Pasa el enlace de Ngrok a tus amigos.
+* Las barras no se mueven:
+  Refresca la web con F5. Asegúrate de que la encuesta 
+  esté en estado "LIVE".
 
-------------------------------------------------------------
-6. SOLUCIÓN DE PROBLEMAS (FAQ)
-------------------------------------------------------------
-
-* El navegador no se abre:
-  Asegúrate de tener Google Chrome o Microsoft Edge instalado 
-  en tu PC. Si el error persiste, revisa los logs de la consola.
-
-* Las barras no se actualizan en tiempo real:
-  Refresca la página web con F5 o Ctrl+F5 para asegurarte de 
-  tener la última versión del código cargada.
-
-* Error "NotImplementedError":
-  Ocurre si usas 'uvicorn' directamente. Usa siempre 
-  'python run.py'.
+* Error al iniciar (Windows):
+  Asegúrate de que 'python' esté en el PATH de tu sistema.
 
 ------------------------------------------------------------
 Desarrollado para streamers de Kick.
