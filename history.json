@@ -640,5 +640,45 @@
         "mystycc"
       ]
     }
+  },
+  {
+    "poll_id": "CF69EBFF",
+    "question": "Anime",
+    "options": [
+      "Kimetsu",
+      "Naruto"
+    ],
+    "channel": "hqrdnoise",
+    "max_votes_per_user": 1,
+    "started_at": "2026-04-28T00:50:47.252716",
+    "ended_at": "2026-04-28T00:51:00.643562",
+    "total_votes": 1,
+    "counts": {
+      "1": 1,
+      "2": 0
+    },
+    "options_summary": [
+      {
+        "index": 1,
+        "label": "Kimetsu",
+        "votes": 1,
+        "percent": 100.0,
+        "voters": [
+          "mystycc"
+        ]
+      },
+      {
+        "index": 2,
+        "label": "Naruto",
+        "votes": 0,
+        "percent": 0.0,
+        "voters": []
+      }
+    ],
+    "voters_by_option": {
+      "1": [
+        "mystycc"
+      ]
+    }
   }
 ]
