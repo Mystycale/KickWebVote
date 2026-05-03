@@ -1,1664 +1,2055 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KICK VOTE</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap');
-
-  :root {
-    --green: #53FC18;
-    --green-dim: #3ab810;
-    --bg: #0a0a0a;
-    --bg2: #111111;
-    --bg3: #1a1a1a;
-    --bg4: #222222;
-    --border: #2a2a2a;
-    --text: #e8e8e8;
-    --text-dim: #888;
-    --red: #ff4444;
-    --font-head: 'Barlow Condensed', sans-serif;
-    --font-body: 'Barlow', sans-serif;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  /* ─── LAYOUT ─────────────────────────────────── */
-  .app {
-    width: 100%;
-    max-width: 480px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
-
-  .view { display: none; flex-direction: column; flex: 1; }
-  .view.active { display: flex; }
-
-  /* ─── HEADER ─────────────────────────────────── */
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .logo {
-    font-family: var(--font-head);
-    font-size: 28px;
-    font-weight: 900;
-    font-style: italic;
-    color: var(--green);
-    letter-spacing: -0.5px;
-  }
-
-  .header-right { display: flex; align-items: center; gap: 12px; }
-
-  .live-badge {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-  }
-  .live-badge.on { color: var(--green); border-color: var(--green); }
-  .live-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--text-dim);
-  }
-  .live-badge.on .live-dot {
-    background: var(--green);
-    box-shadow: 0 0 6px var(--green);
-    animation: pulse 1.5s infinite;
-  }
-  @keyframes pulse {
-    0%,100% { opacity:1; } 50% { opacity:0.4; }
-  }
-
-  .signal-icon { color: var(--green); font-size: 18px; }
-
-  .back-btn {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    padding: 4px 0;
-    transition: color 0.2s;
-  }
-  .back-btn:hover { color: var(--text); }
-
-  /* ─── MAIN CONTENT ────────────────────────────── */
-  .content { padding: 24px 20px; flex: 1; }
-
-  /* ─── HERO TEXT ───────────────────────────────── */
-  .hero {
-    text-align: center;
-    padding: 40px 20px 20px;
-  }
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 5px 14px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 24px;
-  }
-  .hero-badge .dot { width:6px;height:6px;border-radius:50%;background:var(--green); }
-  .hero-title {
-    font-family: var(--font-head);
-    font-size: 34px;
-    font-weight: 800;
-    line-height: 1.15;
-    margin-bottom: 14px;
-  }
-  .hero-title em { color: var(--green); font-style: italic; }
-  .hero-sub {
-    font-size: 15px;
-    color: var(--text-dim);
-    line-height: 1.6;
-    max-width: 340px;
-    margin: 0 auto 32px;
-  }
-
-  /* ─── CARD ────────────────────────────────────── */
-  .card {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 16px;
-  }
-
-  .card-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--green);
-    margin-bottom: 6px;
-  }
-  .card-title {
-    font-family: var(--font-head);
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .card-sub {
-    font-size: 13px;
-    color: var(--text-dim);
-    line-height: 1.5;
-    margin-bottom: 14px;
-  }
-  .card-link {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: var(--text);
-    text-decoration: none;
-    cursor: pointer;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .card-link:hover { color: var(--green); }
-
-  /* ─── INPUTS ──────────────────────────────────── */
-  .field { margin-bottom: 18px; }
-  .field-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--green);
-    margin-bottom: 8px;
-  }
-
-  input[type="text"], input[type="number"] {
-    width: 100%;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 15px;
-    padding: 12px 14px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  input[type="text"]:focus, input[type="number"]:focus {
-    border-color: var(--green);
-  }
-  input::placeholder { color: #444; }
-
-  .input-prefix {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
-  .input-prefix:focus-within { border-color: var(--green); }
-  .input-prefix span {
-    padding: 0 12px;
-    font-size: 15px;
-    color: #555;
-    white-space: nowrap;
-    border-right: 1px solid var(--border);
-    height: 100%;
-    display: flex;
-    align-items: center;
-    min-height: 48px;
-  }
-  .input-prefix input {
-    border: none;
-    border-radius: 0;
-    flex: 1;
-    background: transparent;
-  }
-  .input-prefix input:focus { border-color: transparent; }
-
-  /* ─── BUTTONS ─────────────────────────────────── */
-  .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 16px 20px;
-    border: none;
-    border-radius: 10px;
-    font-family: var(--font-head);
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-transform: uppercase;
-  }
-  .btn-primary {
-    background: var(--green);
-    color: #000;
-  }
-  .btn-primary:hover { background: #6fff30; transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(0); }
-
-  .btn-danger {
-    background: transparent;
-    border: 1px solid var(--red);
-    color: var(--red);
-  }
-  .btn-danger:hover { background: rgba(255,68,68,0.08); }
-
-  .btn-secondary {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-size: 15px;
-    font-weight: 700;
-    font-family: var(--font-body);
-  }
-  .btn-secondary:hover { border-color: #555; }
-
-  .btn-sm {
-    width: auto;
-    padding: 10px 18px;
-    font-size: 14px;
-  }
-
-  .btn-note {
-    text-align: center;
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-top: 8px;
-  }
-
-  /* ─── OPTIONS LIST ────────────────────────────── */
-  .options-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
-
-  .option-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .option-num {
-    background: var(--bg4);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-dim);
-    flex-shrink: 0;
-  }
-  .option-row input { margin-bottom: 0; }
-  .remove-option {
-    background: none;
-    border: none;
-    color: #444;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 4px;
-    line-height: 1;
-    flex-shrink: 0;
-    transition: color 0.2s;
-  }
-  .remove-option:hover { color: var(--red); }
-
-  .add-option-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 12px;
-    border: 2px dashed var(--border);
-    border-radius: 8px;
-    background: none;
-    color: var(--text-dim);
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .add-option-btn:hover { border-color: var(--green); color: var(--green); }
-
-  /* ─── TOGGLE ──────────────────────────────────── */
-  .toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 0;
-  }
-  .toggle-label { font-size: 15px; font-weight: 600; }
-  .toggle-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; letter-spacing: 0.5px; text-transform: uppercase; }
-
-  .toggle {
-    position: relative;
-    width: 48px;
-    height: 26px;
-    flex-shrink: 0;
-  }
-  .toggle input { opacity: 0; width: 0; height: 0; }
-  .slider {
-    position: absolute;
-    inset: 0;
-    background: var(--bg4);
-    border: 1px solid var(--border);
-    border-radius: 26px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .slider::before {
-    content: '';
-    position: absolute;
-    width: 18px; height: 18px;
-    left: 3px; top: 3px;
-    background: #666;
-    border-radius: 50%;
-    transition: all 0.2s;
-  }
-  .toggle input:checked + .slider { background: var(--green); border-color: var(--green); }
-  .toggle input:checked + .slider::before { transform: translateX(22px); background: #000; }
-
-  /* ─── STEPPER ─────────────────────────────────── */
-  .stepper {
-    display: flex;
-    align-items: center;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .stepper button {
-    background: none;
-    border: none;
-    color: var(--text);
-    font-size: 22px;
-    font-weight: 300;
-    width: 48px;
-    height: 48px;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .stepper button:hover { background: var(--bg3); }
-  .stepper-val {
-    flex: 1;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 700;
-    font-family: var(--font-head);
-  }
-
-  /* ─── LATENCY BADGE ───────────────────────────── */
-  .latency-badge {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--text-dim);
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    margin-top: 16px;
-  }
-  .latency-dot { width:6px;height:6px;border-radius:50%;background:#555; }
-  .latency-dot.on { background: var(--green); box-shadow: 0 0 4px var(--green); animation: pulse 1.5s infinite; }
-
-  /* ─── STATS ROW ───────────────────────────────── */
-  .stats-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 20px;
-  }
-  .stat-cell {
-    padding: 16px;
-    background: var(--bg3);
-  }
-  .stat-cell + .stat-cell { border-left: 1px solid var(--border); }
-  .stat-name {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 6px;
-  }
-  .stat-val {
-    font-family: var(--font-head);
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--green);
-  }
-
-  /* ─── CHART ───────────────────────────────────── */
-  .chart-wrap {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 16px;
-    position: relative;
-  }
-  .chart-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
-  .chart-title {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .chart-actions { display: flex; gap: 8px; }
-  .icon-btn {
-    background: var(--bg4);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text-dim);
-    width: 30px; height: 30px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.15s;
-  }
-  .icon-btn:hover { color: var(--green); border-color: var(--green); }
-
-  /* ─── RECENT VOTERS ───────────────────────────── */
-  .voter-list { display: flex; flex-direction: column; gap: 10px; }
-  .voter-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-  }
-  .voter-avatar {
-    width: 36px; height: 36px;
-    border-radius: 8px;
-    background: var(--bg4);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--green);
-    flex-shrink: 0;
-  }
-  .voter-name { font-size: 14px; font-weight: 600; flex: 1; }
-  .voter-check { color: var(--green); font-size: 18px; }
-
-  /* ─── RESULTS ─────────────────────────────────── */
-  .result-header {
-    background: var(--bg3);
-    border: 1px solid var(--green);
-    border-radius: 10px;
-    padding: 14px 16px;
-    margin-bottom: 16px;
-  }
-  .result-header-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--green);
-    margin-bottom: 4px;
-  }
-  .result-header-q {
-    font-family: var(--font-head);
-    font-size: 18px;
-    font-weight: 700;
-  }
-  .result-header-meta {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-top: 4px;
-  }
-
-  .distribution-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-  .dist-item { margin-bottom: 4px; }
-  .dist-top {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 4px;
-  }
-  .dist-label {
-    font-family: var(--font-head);
-    font-size: 15px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-  }
-  .dist-label.winner { color: var(--green); }
-  .dist-pct {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--green);
-  }
-  .dist-count { font-size: 13px; color: var(--text-dim); margin-left: 6px; }
-  .dist-bar-bg {
-    width: 100%;
-    height: 8px;
-    background: var(--bg4);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .dist-bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    background: var(--bg4);
-    transition: width 0.6s ease;
-  }
-  .dist-bar-fill.winner { background: var(--green); }
-
-  /* voter breakdown */
-  .breakdown-section { margin-bottom: 16px; }
-  .breakdown-head {
-    border-left: 3px solid var(--green);
-    padding-left: 10px;
-    font-family: var(--font-head);
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-  .voter-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .voter-chip {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 5px 10px;
-    font-size: 13px;
-    font-weight: 500;
-  }
-  .voter-chip-av {
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    background: var(--bg4);
-    font-size: 9px;
-    font-weight: 700;
-    color: var(--green);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .more-tag {
-    font-size: 12px;
-    color: var(--text-dim);
-    font-style: italic;
-    padding: 4px 0;
-  }
-
-  /* ─── HISTORY ─────────────────────────────────── */
-  .filter-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .filter-btn {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text-dim);
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 600;
-    padding: 8px 14px;
-    cursor: pointer;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .filter-btn:hover { border-color: #555; color: var(--text); }
-
-  .export-btn {
-    background: var(--green);
-    border: none;
-    border-radius: 8px;
-    color: #000;
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 700;
-    padding: 8px 16px;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .history-date-group { margin-bottom: 24px; }
-  .history-date-label {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 12px;
-  }
-
-  .history-item {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .history-item:hover { border-color: var(--green); }
-  .history-item-icon {
-    width: 44px; height: 44px;
-    background: var(--bg4);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-  .history-item-body { flex: 1; min-width: 0; }
-  .history-item-q {
-    font-size: 15px;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 2px;
-  }
-  .history-item-meta {
-    font-size: 12px;
-    color: var(--text-dim);
-  }
-  .history-item-winner {
-    font-family: var(--font-head);
-    font-size: 14px;
-    font-weight: 800;
-    color: var(--green);
-    text-transform: uppercase;
-    margin-top: 4px;
-  }
-  .history-item-pct { font-size: 12px; color: var(--text-dim); }
-  .history-arrow { color: var(--text-dim); font-size: 16px; }
-
-  /* ─── FOOTER ──────────────────────────────────── */
-  footer {
-    text-align: center;
-    padding: 20px;
-    font-size: 11px;
-    color: #333;
-    letter-spacing: 0.5px;
-    border-top: 1px solid var(--border);
-  }
-  footer a { color: #444; text-decoration: none; margin: 0 8px; }
-  footer a:hover { color: var(--green); }
-
-  /* ─── SECTION TITLE ───────────────────────────── */
-  .section-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--green);
-  }
-  .section-title {
-    font-family: var(--font-head);
-    font-size: 22px;
-    font-weight: 800;
-    margin: 4px 0 6px;
-  }
-  .section-sub {
-    font-size: 14px;
-    color: var(--text-dim);
-    line-height: 1.5;
-    margin-bottom: 24px;
-  }
-
-  /* ─── TOAST ───────────────────────────────────── */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    z-index: 999;
-    transition: transform 0.3s ease;
-    white-space: nowrap;
-    pointer-events: none;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast.green { border-color: var(--green); color: var(--green); }
-  .toast.red { border-color: var(--red); color: var(--red); }
-
-  /* ─── DIVIDER ─────────────────────────────────── */
-  hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
-
-  /* ─── SCROLL ──────────────────────────────────── */
-  .scroll-area { overflow-y: auto; flex: 1; }
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  /* ─── ANIMATIONS ──────────────────────────────── */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .view.active { animation: fadeIn 0.25s ease; }
-
-  /* dashboard cards */
-  .dash-card {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 14px;
-    cursor: pointer;
-    transition: border-color 0.2s, transform 0.15s;
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-  }
-  .dash-card:hover { border-color: var(--green); transform: translateY(-1px); }
-  .dash-card-icon {
-    width: 48px; height: 48px;
-    background: var(--bg4);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    flex-shrink: 0;
-  }
-  .dash-card-body { flex: 1; }
-  .dash-card-title {
-    font-family: var(--font-head);
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .dash-card-sub { font-size: 13px; color: var(--text-dim); line-height: 1.5; margin-bottom: 10px; }
-  .dash-card-cta {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    color: var(--text);
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-  }
-  .dash-card:hover .dash-card-cta { color: var(--green); }
-
-  /* perf chart wrapper */
-  .perf-chart-wrap { position: relative; height: 120px; }
-
-  /* engagement card */
-  .engagement-row {
-    display: flex; align-items: baseline; justify-content: space-between; padding: 8px 0;
-  }
-  .engagement-key { font-size: 12px; color: var(--text-dim); }
-  .engagement-val { font-family: var(--font-head); font-size: 26px; font-weight: 800; }
-  .engagement-delta { font-size: 13px; font-weight: 700; color: var(--green); }
-  .engagement-divider { border-top: 1px solid var(--border); }
-
-  /* connected badge */
-  .connected-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(83,252,24,0.08);
-    border: 1px solid rgba(83,252,24,0.25);
-    border-radius: 20px;
-    padding: 3px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: var(--green);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-  .connected-chip .dot { width:5px;height:5px;border-radius:50%;background:var(--green); animation: pulse 1.5s infinite; }
-
-  .channel-info {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .channel-avatar {
-    width: 48px; height: 48px;
-    background: var(--bg4);
-    border: 2px solid var(--green);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    flex-shrink: 0;
-  }
-  .channel-name {
-    font-family: var(--font-head);
-    font-size: 20px;
-    font-weight: 800;
-    text-transform: uppercase;
-  }
-  .channel-meta { font-size: 12px; color: var(--text-dim); }
-</style>
-</head>
-<body>
-<div class="app" id="app">
-
-  <!-- ╔══════════════════════════════════════╗ -->
-  <!-- ║  VIEW: CONNECT                       ║ -->
-  <!-- ╚══════════════════════════════════════╝ -->
-  <div class="view active" id="view-connect">
-    <header>
-      <div class="logo">KICK VOTE</div>
-      <div class="header-right">
-        <span class="signal-icon">((·))</span>
-      </div>
-    </header>
-
-    <div class="hero">
-      <div class="hero-badge"><span class="dot"></span> VOTING ENGINE v2.0</div>
-      <h1 class="hero-title">LET YOUR <em>CHAT</em> DECIDE YOUR <em>FATE</em></h1>
-      <p class="hero-sub">Conecta tu canal de Kick y lanza encuestas en tiempo real que mantienen a tus espectadores al filo de sus asientos.</p>
-    </div>
-
-    <div class="content">
-      <div class="card">
-        <div class="field-label">KICK CHANNEL NAME</div>
-        <div class="input-prefix">
-          <span>kick.com/</span>
-          <input type="text" id="channel-input" placeholder="username" autocomplete="off" autocapitalize="off">
-        </div>
-        <div style="height:16px"></div>
-        <button class="btn btn-primary" onclick="connectChannel()">
-          GET STARTED &nbsp;→
-        </button>
-        <div style="display:flex;justify-content:center;gap:20px;margin-top:16px">
-          <span style="font-size:11px;color:var(--text-dim);font-weight:700;letter-spacing:0.5px;display:flex;align-items:center;gap:5px">⚡ REAL-TIME SYNC</span>
-          <span style="font-size:11px;color:var(--text-dim)">•</span>
-          <span style="font-size:11px;color:var(--text-dim);font-weight:700;letter-spacing:0.5px;display:flex;align-items:center;gap:5px">🛡 SECURE CONNECT</span>
-        </div>
-      </div>
-    </div>
-
-    <footer>
-      © 2024 KICK VOTE ENGINE &nbsp;·&nbsp;
-      <a href="#">TERMS</a><a href="#">PRIVACY</a><a href="#">API DOCS</a>
-    </footer>
-  </div>
-
-  <!-- ╔══════════════════════════════════════╗ -->
-  <!-- ║  VIEW: DASHBOARD                     ║ -->
-  <!-- ╚══════════════════════════════════════╝ -->
-  <div class="view" id="view-dashboard">
-    <header>
-      <div class="logo">KICK VOTE</div>
-      <div class="header-right">
-        <div class="live-badge on" id="dash-live-badge">
-          <div class="live-dot"></div> LIVE
-        </div>
-        <span class="signal-icon">((·))</span>
-      </div>
-    </header>
-
-    <div class="content scroll-area">
-      <div class="channel-info">
-        <div class="channel-avatar">📡</div>
-        <div>
-          <div class="connected-chip"><span class="dot"></span> SESSION ACTIVE</div>
-          <div class="channel-name" id="dash-channel-name">—</div>
-          <div class="channel-meta">Connected via Kick.com</div>
-        </div>
-      </div>
-
-      <div class="dash-card" onclick="goTo('view-create')">
-        <div class="dash-card-icon">📊</div>
-        <div class="dash-card-body">
-          <div class="dash-card-title">Create New Poll</div>
-          <div class="dash-card-sub">Lanza un voto en tiempo real para tu audiencia con opciones personalizadas.</div>
-          <div class="dash-card-cta">START ENGINE →</div>
-        </div>
-      </div>
-
-      <div class="dash-card" onclick="goTo('view-history')">
-        <div class="dash-card-icon">📋</div>
-        <div class="dash-card-body">
-          <div class="dash-card-title">View Poll History</div>
-          <div class="dash-card-sub">Revisa datos de engagement pasados, estadísticas de ganadores y exporta resultados.</div>
-          <div class="dash-card-cta">BROWSE ARCHIVE →</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div style="font-size:13px;font-weight:700;margin-bottom:12px">Recent Poll Performance <span style="float:right;font-size:11px;color:var(--text-dim);font-weight:400">Last 7 Days</span></div>
-        <div class="perf-chart-wrap"><canvas id="perf-chart"></canvas></div>
-      </div>
-
-      <div class="card">
-        <div style="font-size:14px;font-weight:700;margin-bottom:4px">Engagement</div>
-        <div class="engagement-row">
-          <div>
-            <div class="engagement-key">Total Votes</div>
-            <div class="engagement-val" id="total-votes-all">—</div>
-          </div>
-          <div class="engagement-delta" id="total-delta"></div>
-        </div>
-        <div class="engagement-divider"></div>
-        <div class="engagement-row">
-          <div>
-            <div class="engagement-key">Total Polls</div>
-            <div class="engagement-val" id="total-polls-all">—</div>
-          </div>
-        </div>
-        <div style="height:12px"></div>
-        <button class="btn btn-secondary" onclick="exportCSV()">EXPORT REPORT</button>
-      </div>
-    </div>
-
-    <footer>© 2024 KICK VOTE ENGINE<br><a href="#">TERMS</a><a href="#">PRIVACY</a><a href="#">API DOCS</a></footer>
-  </div>
-
-  <!-- ╔══════════════════════════════════════╗ -->
-  <!-- ║  VIEW: CREATE POLL                   ║ -->
-  <!-- ╚══════════════════════════════════════╝ -->
-  <div class="view" id="view-create">
-    <header>
-      <button class="back-btn" onclick="goTo('view-dashboard')">← BACK</button>
-      <div class="logo" style="font-size:22px">KICK VOTE</div>
-      <span class="signal-icon" style="font-size:14px">((·))</span>
-    </header>
-
-    <div class="content scroll-area">
-      <div class="section-label">● LIVE ENGINE</div>
-      <div class="section-title">Create New Poll</div>
-      <div class="section-sub">Engancha a tu audiencia con votos competitivos en tiempo real.</div>
-
-      <!-- Question -->
-      <div class="card">
-        <div class="field-label">Poll Question</div>
-        <input type="text" id="poll-question" placeholder="¿Qué deberíamos jugar ahora?">
-      </div>
-
-      <!-- Options -->
-      <div class="card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div class="field-label" style="margin:0">Voting Options</div>
-          <div style="font-size:11px;color:var(--text-dim);font-weight:600">MIN: 2 / MAX: 20</div>
-        </div>
-        <div class="options-list" id="options-list">
-          <!-- dynamic options inserted here -->
-        </div>
-        <button class="add-option-btn" onclick="addOption()">+ Add Option</button>
-      </div>
-
-      <!-- Vote Config -->
-      <div class="card">
-        <div class="field-label">Vote Configuration</div>
-        <div class="toggle-row">
-          <div>
-            <div class="toggle-label">Allow Multiple Votes</div>
-            <div class="toggle-sub">PER UNIQUE USER ID</div>
-          </div>
-          <label class="toggle">
-            <input type="checkbox" id="multi-toggle" onchange="toggleMulti()">
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div id="votes-per-user-row" style="display:none;margin-top:4px">
-          <div class="field-label">Votes per user</div>
-          <div class="stepper">
-            <button onclick="changeVotes(-1)">−</button>
-            <div class="stepper-val" id="votes-val">3</div>
-            <button onclick="changeVotes(1)">+</button>
-          </div>
-        </div>
-
-        <div class="latency-badge" style="margin-top:16px">
-          <div class="latency-dot on"></div>
-          LATENCY: &lt;100MS
-        </div>
-      </div>
-
-      <button class="btn btn-primary" onclick="startPoll()">
-        🚀 START POLL
-      </button>
-      <div class="btn-note">Action cannot be undone once broadcasted</div>
-      <div style="height:24px"></div>
-    </div>
-
-    <footer>KICK VOTE ENGINE &nbsp;© 2024 KICK VOTE ENGINE<br><a href="#">TERMS</a><a href="#">PRIVACY</a><a href="#">API DOCS</a></footer>
-  </div>
-
-  <!-- ╔══════════════════════════════════════╗ -->
-  <!-- ║  VIEW: ACTIVE POLL                   ║ -->
-  <!-- ╚══════════════════════════════════════╝ -->
-  <div class="view" id="view-active">
-    <header>
-      <div class="logo" style="font-size:22px">KICK VOTE</div>
-      <div class="header-right">
-        <div class="live-badge on"><div class="live-dot"></div> LIVE VOTING ACTIVE</div>
-      </div>
-    </header>
-
-    <div class="content scroll-area">
-      <div id="active-question" style="font-family:var(--font-head);font-size:20px;font-weight:800;margin-bottom:4px">—</div>
-      <div id="active-sub" style="font-size:13px;color:var(--text-dim);margin-bottom:20px">Cast your vote to decide the next title!</div>
-
-      <div class="stats-row">
-        <div class="stat-cell">
-          <div class="stat-name">TOTAL VOTES</div>
-          <div class="stat-val" id="active-total">0</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-name">STATUS</div>
-          <div class="stat-val" style="font-size:16px;color:var(--green)">LIVE ●</div>
-        </div>
-      </div>
-
-      <div class="chart-wrap">
-        <div class="chart-header">
-          <div class="chart-title">Real-Time Standings</div>
-        </div>
-        <div style="position:relative;height:250px;width:100%">
-          <canvas id="active-chart"></canvas>
-        </div>
-      </div>
-
-      <div style="font-size:13px;font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Recent Voters</div>
-      <div class="voter-list" id="active-voters"></div>
-      <div style="height:20px"></div>
-
-      <button class="btn btn-danger" onclick="endPoll()">
-        🏁 END POLL
-      </button>
-      <div style="height:24px"></div>
-    </div>
-
-    <footer>© 2024 KICK VOTE ENGINE<br><a href="#">TERMS</a><a href="#">PRIVACY</a><a href="#">API DOCS</a></footer>
-  </div>
-
-  <!-- ╔══════════════════════════════════════╗ -->
-  <!-- ║  VIEW: RESULTS                       ║ -->
-  <!-- ╚══════════════════════════════════════╝ -->
-  <div class="view" id="view-results">
-    <header>
-      <div class="logo" style="font-size:22px">KICK VOTE</div>
-      <div class="header-right">
-        <div class="live-badge"><div class="live-dot"></div> POLL COMPLETED</div>
-      </div>
-    </header>
-
-    <div class="content scroll-area">
-      <div class="result-header">
-        <div class="result-header-label">POLL COMPLETED</div>
-        <div class="result-header-q" id="result-question">—</div>
-        <div class="result-header-meta" id="result-meta">0 TOTAL VOTES</div>
-      </div>
-
-      <div class="chart-wrap">
-        <div class="chart-header">
-          <div class="chart-title">Final Vote Distribution</div>
-          <div class="chart-actions">
-            <div class="icon-btn" onclick="exportCSV()" title="Export CSV">⬇</div>
-          </div>
-        </div>
-        <div style="position:relative;height:250px;width:100%">
-          <canvas id="result-chart"></canvas>
-        </div>
-      </div>
-
-      <div id="result-dist-list" class="distribution-list"></div>
-
-      <hr>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-        <div style="font-size:14px;font-weight:700">Voter Breakdown</div>
-        <button class="export-btn" onclick="exportCSV()">EXPORT CSV</button>
-      </div>
-      <div id="result-breakdown"></div>
-
-      <div style="display:flex;flex-direction:column;gap:10px;margin-top:24px">
-        <button class="btn btn-primary" onclick="goTo('view-create')">+ NEW POLL</button>
-        <button class="btn btn-secondary" onclick="loadHistory(); goTo('view-history')">⟳ VIEW HISTORY</button>
-      </div>
-      <div style="height:24px"></div>
-    </div>
-
-    <footer>© 2024 KICK VOTE ENGINE<br><a href="#">TERMS</a><a href="#">PRIVACY</a><a href="#">API DOCS</a></footer>
-  </div>
-
-  <!-- ╔══════════════════════════════════════╗ -->
-  <!-- ║  VIEW: HISTORY                       ║ -->
-  <!-- ╚══════════════════════════════════════╝ -->
-  <div class="view" id="view-history">
-    <header>
-      <button class="back-btn" onclick="goTo('view-dashboard')">← BACK</button>
-      <div class="logo" style="font-size:20px">KICK VOTE</div>
-      <div class="live-badge on" style="font-size:10px"><div class="live-dot"></div> LIVE ENGINE</div>
-    </header>
-
-    <div class="content scroll-area">
-      <div class="section-label">ARCHIVE ACCESS</div>
-      <div class="section-title">Poll History</div>
-
-      <div class="filter-row">
-        <button class="filter-btn">≡ Filter</button>
-        <button class="export-btn" onclick="exportCSV()">EXPORT CSV</button>
-      </div>
-
-      <div id="history-list">
-        <div style="text-align:center;color:var(--text-dim);padding:40px 0;font-size:14px">No hay votaciones en el historial.</div>
-      </div>
-      <div style="height:24px"></div>
-    </div>
-
-    <footer>© 2024 KICK VOTE ENGINE<br><a href="#">TERMS</a><a href="#">PRIVACY</a><a href="#">API DOCS</a></footer>
-  </div>
-
-  <!-- ╔══════════════════════════════════════╗ -->
-  <!-- ║  VIEW: HISTORY DETAIL                ║ -->
-  <!-- ╚══════════════════════════════════════╝ -->
-  <div class="view" id="view-history-detail">
-    <header>
-      <button class="back-btn" onclick="goTo('view-history')">← BACK</button>
-      <div class="logo" style="font-size:20px">KICK VOTE</div>
-      <div class="live-badge" style="font-size:10px"><div class="live-dot"></div> ARCHIVE</div>
-    </header>
-
-    <div class="content scroll-area">
-      <div class="result-header">
-        <div class="result-header-label" id="detail-label">HISTORIAL</div>
-        <div class="result-header-q" id="detail-question">—</div>
-        <div class="result-header-meta" id="detail-meta">—</div>
-      </div>
-
-      <div class="chart-wrap">
-        <div class="chart-header">
-          <div class="chart-title">Vote Distribution</div>
-        </div>
-        <div style="position:relative;height:250px;width:100%">
-          <canvas id="detail-chart"></canvas>
-        </div>
-      </div>
-
-      <div id="detail-dist-list" class="distribution-list"></div>
-
-      <hr>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-        <div style="font-size:14px;font-weight:700">Voter Breakdown</div>
-        <button class="export-btn" onclick="exportDetailCSV()">EXPORT CSV</button>
-      </div>
-      <div id="detail-breakdown"></div>
-
-      <div style="display:flex;flex-direction:column;gap:10px;margin-top:24px">
-        <button class="btn btn-primary" onclick="repeatPoll()">↻ REPEAT POLL</button>
-        <button class="btn btn-secondary" onclick="goTo('view-history')">← VOLVER</button>
-      </div>
-      <div style="height:24px"></div>
-    </div>
-
-    <footer>© 2024 KICK VOTE ENGINE<br><a href="#">TERMS</a><a href="#">PRIVACY</a><a href="#">API DOCS</a></footer>
-  </div>
-
-</div><!-- .app -->
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<script>
-// ═══════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════
-let state = {
-  channel: null,
-  currentPoll: null,
-  currentResults: null,
-  historyData: [],
-  detailPoll: null,
-  votesPerUser: 3,
-};
-
-let ws = null;
-let activeChart = null;
-let resultChart = null;
-let detailChart = null;
-let perfChart = null;
-
-// ═══════════════════════════════════════════
-//  ROUTING
-// ═══════════════════════════════════════════
-// ═══════════════════════════════════════════
-//  STARTUP
-// ═══════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', () => {
-  connectWS();
-  checkSession();
-  renderDefaultOptions();
-});
-
-async function checkSession() {
-  try {
-    const r = await fetch('/api/session');
-    const d = await r.json();
-    if (d.active && d.channel) {
-      state.channel = d.channel;
-      updateDashboard();
-      goTo('view-dashboard');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KICK VOTE</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap');
+
+    :root {
+      --green: #53FC18;
+      --green-dim: #3ab810;
+      --bg: #0a0a0a;
+      --bg2: #111111;
+      --bg3: #1a1a1a;
+      --bg4: #222222;
+      --border: #2a2a2a;
+      --text: #e8e8e8;
+      --text-dim: #888;
+      --red: #ff4444;
+      --font-head: 'Barlow Condensed', sans-serif;
+      --font-body: 'Barlow', sans-serif;
     }
-  } catch(e) {}
-}
 
-function goTo(viewId) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById(viewId).classList.add('active');
-  window.scrollTo(0, 0);
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-// ═══════════════════════════════════════════
-//  WEBSOCKET
-// ═══════════════════════════════════════════
-function connectWS() {
-  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
-  ws = new WebSocket(`${proto}://${location.host}/ws`);
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-  ws.onmessage = (e) => {
-    const data = JSON.parse(e.data);
-    handleWS(data);
-  };
+    /* ─── LAYOUT ─────────────────────────────────── */
+    .app {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
 
-  ws.onclose = () => {
-    setTimeout(connectWS, 3000);
-  };
+    .view {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+    }
 
-  ws.onerror = () => ws.close();
-}
+    .view.active {
+      display: flex;
+    }
 
-function handleWS(data) {
-  if (data.type === 'ping') return;
+    /* ─── HEADER ─────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-  if (data.type === 'session_info') {
-    state.channel = data.channel;
-    updateDashboard();
-  }
+    .logo {
+      font-family: var(--font-head);
+      font-size: 28px;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--green);
+      letter-spacing: -0.5px;
+    }
 
-  if (data.type === 'poll_started' || data.type === 'vote_update') {
-    state.currentPoll = data;
-    updateActiveView(data);
-  }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-  if (data.type === 'poll_ended') {
-    state.currentResults = data;
-    renderResults(data);
-    goTo('view-results');
-  }
-}
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
 
-// ═══════════════════════════════════════════
-//  CONNECT CHANNEL
-// ═══════════════════════════════════════════
-async function connectChannel() {
-  const ch = document.getElementById('channel-input').value.trim();
-  if (!ch) { showToast('Ingresa un nombre de canal', 'red'); return; }
+    .live-badge.on {
+      color: var(--green);
+      border-color: var(--green);
+    }
 
-  showToast('Conectando...', '');
-  try {
-    const r = await fetch('/api/session', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ channel: ch })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    const d = await r.json();
-    state.channel = d.channel;
-    showToast('Conectado a ' + d.channel, 'green');
-    updateDashboard();
-    await loadHistory();
-    goTo('view-dashboard');
-  } catch(err) {
-    showToast('Error: ' + err.message, 'red');
-  }
-}
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-dim);
+    }
 
-// ═══════════════════════════════════════════
-//  DASHBOARD
-// ═══════════════════════════════════════════
-function updateDashboard() {
-  if (!state.channel) return;
-  document.getElementById('dash-channel-name').textContent = state.channel.toUpperCase();
-  renderPerfChart();
-  updateEngagement();
-}
+    .live-badge.on .live-dot {
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 1.5s infinite;
+    }
 
-function updateEngagement() {
-  const h = state.historyData;
-  const total = h.reduce((s, p) => s + (p.total_votes || 0), 0);
-  document.getElementById('total-votes-all').textContent = total.toLocaleString();
-  document.getElementById('total-polls-all').textContent = h.length;
-}
+    @keyframes pulse {
 
-function renderPerfChart() {
-  const ctx = document.getElementById('perf-chart');
-  if (!ctx) return;
-  if (perfChart) { perfChart.destroy(); perfChart = null; }
-  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const vals = days.map(() => Math.floor(Math.random() * 3000 + 500));
-  perfChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: days,
-      datasets: [{
-        data: vals,
-        backgroundColor: vals.map((v,i) => v === Math.max(...vals) ? '#53FC18' : '#2a2a2a'),
-        borderRadius: 4,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: {display:false}, tooltip: {enabled:true} },
-      scales: {
-        x: { grid:{display:false}, ticks:{color:'#555',font:{size:11}} },
-        y: { display:false }
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
       }
     }
-  });
-}
 
-// ═══════════════════════════════════════════
-//  CREATE POLL – OPTIONS
-// ═══════════════════════════════════════════
-let optionCount = 0;
+    .signal-icon {
+      color: var(--green);
+      font-size: 18px;
+    }
 
-function renderDefaultOptions() {
-  const list = document.getElementById('options-list');
-  list.innerHTML = '';
-  optionCount = 0;
-  addOption('');
-  addOption('');
-}
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 4px 0;
+      transition: color 0.2s;
+    }
 
-function addOption(val = '') {
-  const list = document.getElementById('options-list');
-  optionCount++;
-  const idx = optionCount;
-  const row = document.createElement('div');
-  row.className = 'option-row';
-  row.dataset.idx = idx;
-  row.innerHTML = `
+    .back-btn:hover {
+      color: var(--text);
+    }
+
+    /* ─── MAIN CONTENT ────────────────────────────── */
+    .content {
+      padding: 24px 20px;
+      flex: 1;
+    }
+
+    /* ─── HERO TEXT ───────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: 40px 20px 20px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 24px;
+    }
+
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .hero-title {
+      font-family: var(--font-head);
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+
+    .hero-title em {
+      color: var(--green);
+      font-style: italic;
+    }
+
+    .hero-sub {
+      font-size: 15px;
+      color: var(--text-dim);
+      line-height: 1.6;
+      max-width: 340px;
+      margin: 0 auto 32px;
+    }
+
+    /* ─── CARD ────────────────────────────────────── */
+    .card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-family: var(--font-head);
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .card-sub {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .card-link {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text);
+      text-decoration: none;
+      cursor: pointer;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-link:hover {
+      color: var(--green);
+    }
+
+    /* ─── INPUTS ──────────────────────────────────── */
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: var(--green);
+    }
+
+    input::placeholder {
+      color: #444;
+    }
+
+    .input-prefix {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .input-prefix:focus-within {
+      border-color: var(--green);
+    }
+
+    .input-prefix span {
+      padding: 0 12px;
+      font-size: 15px;
+      color: #555;
+      white-space: nowrap;
+      border-right: 1px solid var(--border);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      min-height: 48px;
+    }
+
+    .input-prefix input {
+      border: none;
+      border-radius: 0;
+      flex: 1;
+      background: transparent;
+    }
+
+    .input-prefix input:focus {
+      border-color: transparent;
+    }
+
+    /* ─── BUTTONS ─────────────────────────────────── */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 16px 20px;
+      border: none;
+      border-radius: 10px;
+      font-family: var(--font-head);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      background: #6fff30;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-danger {
+      background: transparent;
+      border: 1px solid var(--red);
+      color: var(--red);
+    }
+
+    .btn-danger:hover {
+      background: rgba(255, 68, 68, 0.08);
+    }
+
+    .btn-secondary {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font-body);
+    }
+
+    .btn-secondary:hover {
+      border-color: #555;
+    }
+
+    .btn-sm {
+      width: auto;
+      padding: 10px 18px;
+      font-size: 14px;
+    }
+
+    .btn-note {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 8px;
+    }
+
+    /* ─── OPTIONS LIST ────────────────────────────── */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .option-num {
+      background: var(--bg4);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    .option-row input {
+      margin-bottom: 0;
+    }
+
+    .remove-option {
+      background: none;
+      border: none;
+      color: #444;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+      flex-shrink: 0;
+      transition: color 0.2s;
+    }
+
+    .remove-option:hover {
+      color: var(--red);
+    }
+
+    .add-option-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px;
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      background: none;
+      color: var(--text-dim);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .add-option-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    /* ─── TOGGLE ──────────────────────────────────── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+    }
+
+    .toggle-label {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .toggle-sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .toggle {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: var(--bg4);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .slider::before {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 3px;
+      top: 3px;
+      background: #666;
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+
+    .toggle input:checked+.slider {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .toggle input:checked+.slider::before {
+      transform: translateX(22px);
+      background: #000;
+    }
+
+    /* ─── STEPPER ─────────────────────────────────── */
+    .stepper {
+      display: flex;
+      align-items: center;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .stepper button {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 22px;
+      font-weight: 300;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .stepper button:hover {
+      background: var(--bg3);
+    }
+
+    .stepper-val {
+      flex: 1;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      font-family: var(--font-head);
+    }
+
+    /* ─── LATENCY BADGE ───────────────────────────── */
+    .latency-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-dim);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-top: 16px;
+    }
+
+    .latency-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #555;
+    }
+
+    .latency-dot.on {
+      background: var(--green);
+      box-shadow: 0 0 4px var(--green);
+      animation: pulse 1.5s infinite;
+    }
+
+    /* ─── STATS ROW ───────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .stat-cell {
+      padding: 16px;
+      background: var(--bg3);
+    }
+
+    .stat-cell+.stat-cell {
+      border-left: 1px solid var(--border);
+    }
+
+    .stat-name {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+
+    .stat-val {
+      font-family: var(--font-head);
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    /* ─── CHART ───────────────────────────────────── */
+    .chart-wrap {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .chart-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .chart-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: var(--bg4);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-dim);
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.15s;
+    }
+
+    .icon-btn:hover {
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    /* ─── RECENT VOTERS ───────────────────────────── */
+    .voter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .voter-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .voter-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--bg4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--green);
+      flex-shrink: 0;
+    }
+
+    .voter-name {
+      font-size: 14px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .voter-check {
+      color: var(--green);
+      font-size: 18px;
+    }
+
+    /* ─── RESULTS ─────────────────────────────────── */
+    .result-header {
+      background: var(--bg3);
+      border: 1px solid var(--green);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+
+    .result-header-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 4px;
+    }
+
+    .result-header-q {
+      font-family: var(--font-head);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .result-header-meta {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    .distribution-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .dist-item {
+      margin-bottom: 4px;
+    }
+
+    .dist-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .dist-label {
+      font-family: var(--font-head);
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .dist-label.winner {
+      color: var(--green);
+    }
+
+    .dist-pct {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .dist-count {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-left: 6px;
+    }
+
+    .dist-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: var(--bg4);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .dist-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: var(--bg4);
+      transition: width 0.6s ease;
+    }
+
+    .dist-bar-fill.winner {
+      background: var(--green);
+    }
+
+    /* voter breakdown */
+    .breakdown-section {
+      margin-bottom: 16px;
+    }
+
+    .breakdown-head {
+      border-left: 3px solid var(--green);
+      padding-left: 10px;
+      font-family: var(--font-head);
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .voter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .voter-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 10px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .voter-chip-av {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--bg4);
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .more-tag {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-style: italic;
+      padding: 4px 0;
+    }
+
+    /* ─── HISTORY ─────────────────────────────────── */
+    .filter-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .filter-btn {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-dim);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-btn:hover {
+      border-color: #555;
+      color: var(--text);
+    }
+
+    .export-btn {
+      background: var(--green);
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 16px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .history-date-group {
+      margin-bottom: 24px;
+    }
+
+    .history-date-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .history-item {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .history-item:hover {
+      border-color: var(--green);
+    }
+
+    .history-item-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--bg4);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .history-item-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .history-item-q {
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+
+    .history-item-meta {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .history-item-winner {
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--green);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .history-item-pct {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .history-arrow {
+      color: var(--text-dim);
+      font-size: 16px;
+    }
+
+    /* ─── FOOTER ──────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 11px;
+      color: #333;
+      letter-spacing: 0.5px;
+      border-top: 1px solid var(--border);
+    }
+
+    footer a {
+      color: #444;
+      text-decoration: none;
+      margin: 0 8px;
+    }
+
+    footer a:hover {
+      color: var(--green);
+    }
+
+    /* ─── SECTION TITLE ───────────────────────────── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+
+    .section-title {
+      font-family: var(--font-head);
+      font-size: 22px;
+      font-weight: 800;
+      margin: 4px 0 6px;
+    }
+
+    .section-sub {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    /* ─── TOAST ───────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      z-index: 999;
+      transition: transform 0.3s ease;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast.green {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .toast.red {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    /* ─── DIVIDER ─────────────────────────────────── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
+    }
+
+    /* ─── SCROLL ──────────────────────────────────── */
+    .scroll-area {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    /* ─── ANIMATIONS ──────────────────────────────── */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .view.active {
+      animation: fadeIn 0.25s ease;
+    }
+
+    /* dashboard cards */
+    .dash-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .dash-card:hover {
+      border-color: var(--green);
+      transform: translateY(-1px);
+    }
+
+    .dash-card-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--bg4);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .dash-card-body {
+      flex: 1;
+    }
+
+    .dash-card-title {
+      font-family: var(--font-head);
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .dash-card-sub {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .dash-card-cta {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dash-card:hover .dash-card-cta {
+      color: var(--green);
+    }
+
+    /* perf chart wrapper */
+    .perf-chart-wrap {
+      position: relative;
+      height: 120px;
+    }
+
+    /* engagement card */
+    .engagement-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+
+    .engagement-key {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .engagement-val {
+      font-family: var(--font-head);
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .engagement-delta {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .engagement-divider {
+      border-top: 1px solid var(--border);
+    }
+
+    /* connected badge */
+    .connected-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(83, 252, 24, 0.08);
+      border: 1px solid rgba(83, 252, 24, 0.25);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--green);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .connected-chip .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1.5s infinite;
+    }
+
+    .channel-info {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .channel-avatar {
+      width: 48px;
+      height: 48px;
+      background: var(--bg4);
+      border: 2px solid var(--green);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .channel-name {
+      font-family: var(--font-head);
+      font-size: 20px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .channel-meta {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app" id="app">
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║  VIEW: CONNECT                       ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <div class="view active" id="view-connect">
+      <header>
+        <div class="logo">KICK VOTE</div>
+        <div class="header-right">
+          <span class="signal-icon">((·))</span>
+        </div>
+      </header>
+
+      <div class="hero">
+        <div class="hero-badge"><span class="dot"></span> VOTING ENGINE v2.0</div>
+        <h1 class="hero-title">LET YOUR <em>CHAT</em> DECIDE YOUR <em>FATE</em></h1>
+        <p class="hero-sub">Conecta tu canal de Kick y lanza encuestas en tiempo real que mantienen a tus espectadores
+          al filo de sus asientos.</p>
+      </div>
+
+      <div class="content">
+        <div class="card">
+          <div class="field-label">KICK CHANNEL NAME</div>
+          <div class="input-prefix">
+            <span>kick.com/</span>
+            <input type="text" id="channel-input" placeholder="username" autocomplete="off" autocapitalize="off">
+          </div>
+          <div style="height:16px"></div>
+          <button class="btn btn-primary" onclick="connectChannel()">
+            GET STARTED &nbsp;→
+          </button>
+          <div style="display:flex;justify-content:center;gap:20px;margin-top:16px">
+            <span
+              style="font-size:11px;color:var(--text-dim);font-weight:700;letter-spacing:0.5px;display:flex;align-items:center;gap:5px">⚡
+              REAL-TIME SYNC</span>
+            <span style="font-size:11px;color:var(--text-dim)">•</span>
+            <span
+              style="font-size:11px;color:var(--text-dim);font-weight:700;letter-spacing:0.5px;display:flex;align-items:center;gap:5px">🛡
+              SECURE CONNECT</span>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        © 2024 KICK VOTE ENGINE &nbsp;·&nbsp;
+        <a href="#">TERMS</a><a href="#">PRIVACY</a><a href="#">API DOCS</a>
+      </footer>
+    </div>
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║  VIEW: DASHBOARD                     ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <div class="view" id="view-dashboard">
+      <header>
+        <div class="logo">KICK VOTE</div>
+        <div class="header-right">
+          <div class="live-badge on" id="dash-live-badge">
+            <div class="live-dot"></div> LIVE
+          </div>
+          <span class="signal-icon">((·))</span>
+        </div>
+      </header>
+
+      <div class="content scroll-area">
+        <div class="channel-info">
+          <div class="channel-avatar">📡</div>
+          <div>
+            <div class="connected-chip"><span class="dot"></span> SESSION ACTIVE</div>
+            <div class="channel-name" id="dash-channel-name">—</div>
+            <div class="channel-meta">Connected via Kick.com</div>
+          </div>
+        </div>
+
+        <div class="dash-card" onclick="goTo('view-create')">
+          <div class="dash-card-icon">📊</div>
+          <div class="dash-card-body">
+            <div class="dash-card-title">Create New Poll</div>
+            <div class="dash-card-sub">Lanza un voto en tiempo real para tu audiencia con opciones personalizadas.</div>
+            <div class="dash-card-cta">START ENGINE →</div>
+          </div>
+        </div>
+
+        <div class="dash-card" onclick="goTo('view-history')">
+          <div class="dash-card-icon">📋</div>
+          <div class="dash-card-body">
+            <div class="dash-card-title">View Poll History</div>
+            <div class="dash-card-sub">Revisa datos de engagement pasados, estadísticas de ganadores y exporta
+              resultados.</div>
+            <div class="dash-card-cta">BROWSE ARCHIVE →</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-size:13px;font-weight:700;margin-bottom:12px">Recent Poll Performance <span
+              style="float:right;font-size:11px;color:var(--text-dim);font-weight:400">Last 7 Days</span></div>
+          <div class="perf-chart-wrap"><canvas id="perf-chart"></canvas></div>
+        </div>
+
+        <div class="card">
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px">Engagement</div>
+          <div class="engagement-row">
+            <div>
+              <div class="engagement-key">Total Votes</div>
+              <div class="engagement-val" id="total-votes-all">—</div>
+            </div>
+            <div class="engagement-delta" id="total-delta"></div>
+          </div>
+          <div class="engagement-divider"></div>
+          <div class="engagement-row">
+            <div>
+              <div class="engagement-key">Total Polls</div>
+              <div class="engagement-val" id="total-polls-all">—</div>
+            </div>
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn btn-secondary" onclick="exportCSV()">EXPORT REPORT</button>
+        </div>
+      </div>
+
+      <footer>© 2024 KICK VOTE ENGINE<br><a href="#">TERMS</a><a href="#">PRIVACY</a><a href="#">API DOCS</a></footer>
+    </div>
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║  VIEW: CREATE POLL                   ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <div class="view" id="view-create">
+      <header>
+        <button class="back-btn" onclick="goTo('view-dashboard')">← BACK</button>
+        <div class="logo" style="font-size:22px">KICK VOTE</div>
+        <span class="signal-icon" style="font-size:14px">((·))</span>
+      </header>
+
+      <div class="content scroll-area">
+        <div class="section-label">● LIVE ENGINE</div>
+        <div class="section-title">Create New Poll</div>
+        <div class="section-sub">Engancha a tu audiencia con votos competitivos en tiempo real.</div>
+
+        <!-- Question -->
+        <div class="card">
+          <div class="field-label">Poll Question</div>
+          <input type="text" id="poll-question" placeholder="¿Qué deberíamos jugar ahora?">
+        </div>
+
+        <!-- Options -->
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div class="field-label" style="margin:0">Voting Options</div>
+            <div style="font-size:11px;color:var(--text-dim);font-weight:600">MIN: 2 / MAX: 20</div>
+          </div>
+          <div class="options-list" id="options-list">
+            <!-- dynamic options inserted here -->
+          </div>
+          <button class="add-option-btn" onclick="addOption()">+ Add Option</button>
+        </div>
+
+        <!-- Vote Config -->
+        <div class="card">
+          <div class="field-label">Vote Configuration</div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Allow Multiple Votes</div>
+              <div class="toggle-sub">PER UNIQUE USER ID</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="multi-toggle" onchange="toggleMulti()">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div id="votes-per-user-row" style="display:none;margin-top:4px">
+            <div class="field-label">Votes per user</div>
+            <div class="stepper">
+              <button onclick="changeVotes(-1)">−</button>
+              <div class="stepper-val" id="votes-val">3</div>
+              <button onclick="changeVotes(1)">+</button>
+            </div>
+          </div>
+
+          <div class="latency-badge" style="margin-top:16px">
+            <div class="latency-dot on"></div>
+            LATENCY: &lt;100MS
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="startPoll()">
+          🚀 START POLL
+        </button>
+        <div class="btn-note">Action cannot be undone once broadcasted</div>
+        <div style="height:24px"></div>
+      </div>
+
+      <footer>KICK VOTE ENGINE &nbsp;© 2024 KICK VOTE ENGINE<br><a href="#">TERMS</a><a href="#">PRIVACY</a><a
+          href="#">API DOCS</a></footer>
+    </div>
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║  VIEW: ACTIVE POLL                   ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <div class="view" id="view-active">
+      <header>
+        <div class="logo" style="font-size:22px">KICK VOTE</div>
+        <div class="header-right">
+          <div class="live-badge on">
+            <div class="live-dot"></div> LIVE VOTING ACTIVE
+          </div>
+        </div>
+      </header>
+
+      <div class="content scroll-area">
+        <div id="active-question" style="font-family:var(--font-head);font-size:20px;font-weight:800;margin-bottom:4px">
+          —</div>
+        <div id="active-sub" style="font-size:13px;color:var(--text-dim);margin-bottom:20px">Cast your vote to decide
+          the next title!</div>
+
+        <div class="stats-row">
+          <div class="stat-cell">
+            <div class="stat-name">TOTAL VOTES</div>
+            <div class="stat-val" id="active-total">0</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-name">STATUS</div>
+            <div class="stat-val" style="font-size:16px;color:var(--green)">LIVE ●</div>
+          </div>
+        </div>
+
+        <div class="chart-wrap">
+          <div class="chart-header">
+            <div class="chart-title">Real-Time Standings</div>
+          </div>
+          <div style="position:relative;height:250px;width:100%">
+            <canvas id="active-chart"></canvas>
+          </div>
+        </div>
+
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">
+          Recent Voters</div>
+        <div class="voter-list" id="active-voters"></div>
+        <div style="height:20px"></div>
+
+        <button class="btn btn-danger" onclick="endPoll()">
+          🏁 END POLL
+        </button>
+        <div style="height:24px"></div>
+      </div>
+
+      <footer>© 2024 KICK VOTE ENGINE<br><a href="#">TERMS</a><a href="#">PRIVACY</a><a href="#">API DOCS</a></footer>
+    </div>
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║  VIEW: RESULTS                       ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <div class="view" id="view-results">
+      <header>
+        <div class="logo" style="font-size:22px">KICK VOTE</div>
+        <div class="header-right">
+          <div class="live-badge">
+            <div class="live-dot"></div> POLL COMPLETED
+          </div>
+        </div>
+      </header>
+
+      <div class="content scroll-area">
+        <div class="result-header">
+          <div class="result-header-label">POLL COMPLETED</div>
+          <div class="result-header-q" id="result-question">—</div>
+          <div class="result-header-meta" id="result-meta">0 TOTAL VOTES</div>
+        </div>
+
+        <div class="chart-wrap">
+          <div class="chart-header">
+            <div class="chart-title">Final Vote Distribution</div>
+            <div class="chart-actions">
+              <div class="icon-btn" onclick="exportCSV()" title="Export CSV">⬇</div>
+            </div>
+          </div>
+          <div style="position:relative;height:250px;width:100%">
+            <canvas id="result-chart"></canvas>
+          </div>
+        </div>
+
+        <div id="result-dist-list" class="distribution-list"></div>
+
+        <hr>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="font-size:14px;font-weight:700">Voter Breakdown</div>
+          <button class="export-btn" onclick="exportCSV()">EXPORT CSV</button>
+        </div>
+        <div id="result-breakdown"></div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:24px">
+          <button class="btn btn-primary" onclick="goTo('view-create')">+ NEW POLL</button>
+          <button class="btn btn-secondary" onclick="loadHistory(); goTo('view-history')">⟳ VIEW HISTORY</button>
+        </div>
+        <div style="height:24px"></div>
+      </div>
+
+      <footer>© 2024 KICK VOTE ENGINE<br><a href="#">TERMS</a><a href="#">PRIVACY</a><a href="#">API DOCS</a></footer>
+    </div>
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║  VIEW: HISTORY                       ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <div class="view" id="view-history">
+      <header>
+        <button class="back-btn" onclick="goTo('view-dashboard')">← BACK</button>
+        <div class="logo" style="font-size:20px">KICK VOTE</div>
+        <div class="live-badge on" style="font-size:10px">
+          <div class="live-dot"></div> LIVE ENGINE
+        </div>
+      </header>
+
+      <div class="content scroll-area">
+        <div class="section-label">ARCHIVE ACCESS</div>
+        <div class="section-title">Poll History</div>
+
+        <div class="filter-row">
+          <button class="filter-btn">≡ Filter</button>
+          <button class="export-btn" onclick="exportCSV()">EXPORT CSV</button>
+        </div>
+
+        <div id="history-list">
+          <div style="text-align:center;color:var(--text-dim);padding:40px 0;font-size:14px">No hay votaciones en el
+            historial.</div>
+        </div>
+        <div style="height:24px"></div>
+      </div>
+
+      <footer>© 2024 KICK VOTE ENGINE<br><a href="#">TERMS</a><a href="#">PRIVACY</a><a href="#">API DOCS</a></footer>
+    </div>
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║  VIEW: HISTORY DETAIL                ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <div class="view" id="view-history-detail">
+      <header>
+        <button class="back-btn" onclick="goTo('view-history')">← BACK</button>
+        <div class="logo" style="font-size:20px">KICK VOTE</div>
+        <div class="live-badge" style="font-size:10px">
+          <div class="live-dot"></div> ARCHIVE
+        </div>
+      </header>
+
+      <div class="content scroll-area">
+        <div class="result-header">
+          <div class="result-header-label" id="detail-label">HISTORIAL</div>
+          <div class="result-header-q" id="detail-question">—</div>
+          <div class="result-header-meta" id="detail-meta">—</div>
+        </div>
+
+        <div class="chart-wrap">
+          <div class="chart-header">
+            <div class="chart-title">Vote Distribution</div>
+          </div>
+          <div style="position:relative;height:250px;width:100%">
+            <canvas id="detail-chart"></canvas>
+          </div>
+        </div>
+
+        <div id="detail-dist-list" class="distribution-list"></div>
+
+        <hr>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="font-size:14px;font-weight:700">Voter Breakdown</div>
+          <button class="export-btn" onclick="exportDetailCSV()">EXPORT CSV</button>
+        </div>
+        <div id="detail-breakdown"></div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:24px">
+          <button class="btn btn-primary" onclick="repeatPoll()">↻ REPEAT POLL</button>
+          <button class="btn btn-secondary" onclick="goTo('view-history')">← VOLVER</button>
+        </div>
+        <div style="height:24px"></div>
+      </div>
+
+      <footer>© 2024 KICK VOTE ENGINE<br><a href="#">TERMS</a><a href="#">PRIVACY</a><a href="#">API DOCS</a></footer>
+    </div>
+
+  </div><!-- .app -->
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ═══════════════════════════════════════════
+    //  STATE
+    // ═══════════════════════════════════════════
+    let state = {
+      channel: null,
+      currentPoll: null,
+      currentResults: null,
+      historyData: [],
+      detailPoll: null,
+      votesPerUser: 3,
+    };
+
+    let ws = null;
+    let activeChart = null;
+    let resultChart = null;
+    let detailChart = null;
+    let perfChart = null;
+
+    // ═══════════════════════════════════════════
+    //  ROUTING
+    // ═══════════════════════════════════════════
+    // ═══════════════════════════════════════════
+    //  STARTUP
+    // ═══════════════════════════════════════════
+    window.addEventListener('DOMContentLoaded', () => {
+      connectWS();
+      checkSession();
+      renderDefaultOptions();
+    });
+
+    async function checkSession() {
+      try {
+        const r = await fetch('/api/session');
+        const d = await r.json();
+        if (d.active && d.channel) {
+          state.channel = d.channel;
+          updateDashboard();
+          goTo('view-dashboard');
+        }
+      } catch (e) { }
+    }
+
+    function goTo(viewId) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    // ═══════════════════════════════════════════
+    //  WEBSOCKET
+    // ═══════════════════════════════════════════
+    function connectWS() {
+      const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+      ws = new WebSocket(`${proto}://${location.host}/ws`);
+
+      ws.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        handleWS(data);
+      };
+
+      ws.onclose = () => {
+        setTimeout(connectWS, 3000);
+      };
+
+      ws.onerror = () => ws.close();
+    }
+
+    function handleWS(data) {
+      if (data.type === 'ping') return;
+
+      if (data.type === 'session_info') {
+        state.channel = data.channel;
+        updateDashboard();
+      }
+
+      if (data.type === 'poll_started' || data.type === 'vote_update') {
+        state.currentPoll = data;
+        updateActiveView(data);
+      }
+
+      if (data.type === 'poll_ended') {
+        state.currentResults = data;
+        renderResults(data);
+        goTo('view-results');
+      }
+    }
+
+    // ═══════════════════════════════════════════
+    //  CONNECT CHANNEL
+    // ═══════════════════════════════════════════
+    async function connectChannel() {
+      const ch = document.getElementById('channel-input').value.trim();
+      if (!ch) { showToast('Ingresa un nombre de canal', 'red'); return; }
+
+      showToast('Conectando...', '');
+      try {
+        const r = await fetch('/api/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ channel: ch })
+        });
+        if (!r.ok) throw new Error(await r.text());
+        const d = await r.json();
+        state.channel = d.channel;
+        showToast('Conectado a ' + d.channel, 'green');
+        updateDashboard();
+        await loadHistory();
+        goTo('view-dashboard');
+      } catch (err) {
+        showToast('Error: ' + err.message, 'red');
+      }
+    }
+
+    // ═══════════════════════════════════════════
+    //  DASHBOARD
+    // ═══════════════════════════════════════════
+    function updateDashboard() {
+      if (!state.channel) return;
+      document.getElementById('dash-channel-name').textContent = state.channel.toUpperCase();
+      renderPerfChart();
+      updateEngagement();
+    }
+
+    function updateEngagement() {
+      const h = state.historyData;
+      const total = h.reduce((s, p) => s + (p.total_votes || 0), 0);
+      document.getElementById('total-votes-all').textContent = total.toLocaleString();
+      document.getElementById('total-polls-all').textContent = h.length;
+    }
+
+    function renderPerfChart() {
+      const ctx = document.getElementById('perf-chart');
+      if (!ctx) return;
+      if (perfChart) { perfChart.destroy(); perfChart = null; }
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const vals = days.map(() => Math.floor(Math.random() * 3000 + 500));
+      perfChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: days,
+          datasets: [{
+            data: vals,
+            backgroundColor: vals.map((v, i) => v === Math.max(...vals) ? '#53FC18' : '#2a2a2a'),
+            borderRadius: 4,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: true }, datalabels: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#555', font: { size: 11 } } },
+            y: { display: false }
+          }
+        }
+      });
+    }
+
+    // ═══════════════════════════════════════════
+    //  CREATE POLL – OPTIONS
+    // ═══════════════════════════════════════════
+    let optionCount = 0;
+
+    function renderDefaultOptions() {
+      const list = document.getElementById('options-list');
+      list.innerHTML = '';
+      optionCount = 0;
+      addOption('');
+      addOption('');
+    }
+
+    function addOption(val = '') {
+      const list = document.getElementById('options-list');
+      optionCount++;
+      const idx = optionCount;
+      const row = document.createElement('div');
+      row.className = 'option-row';
+      row.dataset.idx = idx;
+      row.innerHTML = `
     <div class="option-num">${idx}</div>
     <input type="text" placeholder="Option ${idx}" value="${val}" style="flex:1">
     <button class="remove-option" onclick="removeOption(this)" title="Eliminar">✕</button>
   `;
-  list.appendChild(row);
-  renumberOptions();
-}
-
-function removeOption(btn) {
-  const rows = document.querySelectorAll('#options-list .option-row');
-  if (rows.length <= 2) { showToast('Mínimo 2 opciones', 'red'); return; }
-  btn.closest('.option-row').remove();
-  renumberOptions();
-}
-
-function renumberOptions() {
-  document.querySelectorAll('#options-list .option-row').forEach((row, i) => {
-    row.querySelector('.option-num').textContent = i + 1;
-    row.querySelector('input').placeholder = `Option ${i + 1}`;
-  });
-}
-
-// ═══════════════════════════════════════════
-//  MULTI-VOTE TOGGLE
-// ═══════════════════════════════════════════
-function toggleMulti() {
-  const on = document.getElementById('multi-toggle').checked;
-  document.getElementById('votes-per-user-row').style.display = on ? 'block' : 'none';
-}
-
-function changeVotes(delta) {
-  state.votesPerUser = Math.max(2, Math.min(20, state.votesPerUser + delta));
-  document.getElementById('votes-val').textContent = state.votesPerUser;
-}
-
-// ═══════════════════════════════════════════
-//  START POLL
-// ═══════════════════════════════════════════
-async function startPoll() {
-  const question = document.getElementById('poll-question').value.trim();
-  const optionInputs = document.querySelectorAll('#options-list .option-row input[type="text"]');
-  const options = [...optionInputs].map(i => i.value.trim()).filter(Boolean);
-  const multiOn = document.getElementById('multi-toggle').checked;
-  const maxVotes = multiOn ? state.votesPerUser : 1;
-
-  if (options.length < 2) { showToast('Mínimo 2 opciones válidas', 'red'); return; }
-
-  try {
-    const r = await fetch('/api/poll', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ question: question || 'Votación', options, max_votes_per_user: maxVotes })
-    });
-    if (!r.ok) {
-      const err = await r.json();
-      throw new Error(err.detail || 'Error al crear votación');
-    }
-    const d = await r.json();
-    // init active view
-    document.getElementById('active-question').textContent = question || 'Votación';
-    document.getElementById('active-sub').textContent =
-      `Canal: ${state.channel} · Escribe el número de tu opción en el chat`;
-    document.getElementById('active-total').textContent = '0';
-    document.getElementById('active-voters').innerHTML = '';
-    initActiveChart(options);
-    goTo('view-active');
-    showToast('Votación iniciada', 'green');
-  } catch(err) {
-    showToast(err.message, 'red');
-  }
-}
-
-// ═══════════════════════════════════════════
-//  ACTIVE POLL CHART
-// ═══════════════════════════════════════════
-function initActiveChart(options) {
-  const ctx = document.getElementById('active-chart');
-  if (activeChart) { activeChart.destroy(); activeChart = null; }
-  activeChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: options,
-      datasets: [{
-        label: 'Votos',
-        data: options.map(() => 0),
-        backgroundColor: '#53FC18',
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
-    options: chartOpts()
-  });
-}
-
-function updateActiveView(data) {
-  // If we're not on active view, check if we should go there
-  const activeView = document.querySelector('.view.active');
-  if (activeView && activeView.id === 'view-active') {
-    // update chart
-    document.getElementById('active-total').textContent =
-      (data.total_votes || 0).toLocaleString();
-
-    if (activeChart) {
-      const counts = data.counts || {};
-      activeChart.data.labels = data.options;
-      activeChart.data.datasets[0].data = data.options.map((_, i) => counts[String(i+1)] || counts[i+1] || 0);
-      activeChart.update();
+      list.appendChild(row);
+      renumberOptions();
     }
 
-    if (data.recent_voters) {
-      renderRecentVoters(data.recent_voters);
+    function removeOption(btn) {
+      const rows = document.querySelectorAll('#options-list .option-row');
+      if (rows.length <= 2) { showToast('Mínimo 2 opciones', 'red'); return; }
+      btn.closest('.option-row').remove();
+      renumberOptions();
     }
-  }
-}
 
-function renderRecentVoters(voters) {
-  const el = document.getElementById('active-voters');
-  if (!voters || !voters.length) return;
-  el.innerHTML = voters.map(v => `
+    function renumberOptions() {
+      document.querySelectorAll('#options-list .option-row').forEach((row, i) => {
+        row.querySelector('.option-num').textContent = i + 1;
+        row.querySelector('input').placeholder = `Option ${i + 1}`;
+      });
+    }
+
+    // ═══════════════════════════════════════════
+    //  MULTI-VOTE TOGGLE
+    // ═══════════════════════════════════════════
+    function toggleMulti() {
+      const on = document.getElementById('multi-toggle').checked;
+      document.getElementById('votes-per-user-row').style.display = on ? 'block' : 'none';
+    }
+
+    function changeVotes(delta) {
+      state.votesPerUser = Math.max(2, Math.min(20, state.votesPerUser + delta));
+      document.getElementById('votes-val').textContent = state.votesPerUser;
+    }
+
+    // ═══════════════════════════════════════════
+    //  START POLL
+    // ═══════════════════════════════════════════
+    async function startPoll() {
+      const question = document.getElementById('poll-question').value.trim();
+      const optionInputs = document.querySelectorAll('#options-list .option-row input[type="text"]');
+      const options = [...optionInputs].map(i => i.value.trim()).filter(Boolean);
+      const multiOn = document.getElementById('multi-toggle').checked;
+      const maxVotes = multiOn ? state.votesPerUser : 1;
+
+      if (options.length < 2) { showToast('Mínimo 2 opciones válidas', 'red'); return; }
+
+      try {
+        const r = await fetch('/api/poll', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: question || 'Votación', options, max_votes_per_user: maxVotes })
+        });
+        if (!r.ok) {
+          const err = await r.json();
+          throw new Error(err.detail || 'Error al crear votación');
+        }
+        const d = await r.json();
+        // init active view
+        document.getElementById('active-question').textContent = question || 'Votación';
+        document.getElementById('active-sub').textContent =
+          `Canal: ${state.channel} · Escribe el número de tu opción en el chat`;
+        document.getElementById('active-total').textContent = '0';
+        document.getElementById('active-voters').innerHTML = '';
+        initActiveChart(options);
+        goTo('view-active');
+        showToast('Votación iniciada', 'green');
+      } catch (err) {
+        showToast(err.message, 'red');
+      }
+    }
+
+    // ═══════════════════════════════════════════
+    //  ACTIVE POLL CHART
+    // ═══════════════════════════════════════════
+    function initActiveChart(options) {
+      const ctx = document.getElementById('active-chart');
+      if (activeChart) { activeChart.destroy(); activeChart = null; }
+      activeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: options,
+          datasets: [{
+            label: 'Votos',
+            data: options.map(() => 0),
+            backgroundColor: '#53FC18',
+            borderRadius: 6,
+            borderSkipped: false,
+          }]
+        },
+        options: chartOpts()
+      });
+    }
+
+    function updateActiveView(data) {
+      // If we're not on active view, check if we should go there
+      const activeView = document.querySelector('.view.active');
+      if (activeView && activeView.id === 'view-active') {
+        // update chart
+        document.getElementById('active-total').textContent =
+          (data.total_votes || 0).toLocaleString();
+
+        if (activeChart) {
+          const counts = data.counts || {};
+          activeChart.data.labels = data.options;
+          activeChart.data.datasets[0].data = data.options.map((_, i) => counts[String(i + 1)] || counts[i + 1] || 0);
+          activeChart.update();
+        }
+
+        if (data.recent_voters) {
+          renderRecentVoters(data.recent_voters);
+        }
+      }
+    }
+
+    function renderRecentVoters(voters) {
+      const el = document.getElementById('active-voters');
+      if (!voters || !voters.length) return;
+      el.innerHTML = voters.map(v => `
     <div class="voter-item">
-      <div class="voter-avatar">${v.username.slice(0,2).toUpperCase()}</div>
+      <div class="voter-avatar">${v.username.slice(0, 2).toUpperCase()}</div>
       <div class="voter-name">${v.username}</div>
       <div class="voter-check">✔</div>
     </div>
   `).join('');
-}
-
-// ═══════════════════════════════════════════
-//  END POLL
-// ═══════════════════════════════════════════
-async function endPoll() {
-  try {
-    const r = await fetch('/api/poll', { method: 'DELETE' });
-    if (!r.ok) {
-      const err = await r.json();
-      throw new Error(err.detail || 'Error');
     }
-    // results come via WS poll_ended event
-    showToast('Votación finalizada', 'green');
-  } catch(err) {
-    showToast(err.message, 'red');
-  }
-}
 
-// ═══════════════════════════════════════════
-//  RESULTS
-// ═══════════════════════════════════════════
-function renderResults(data) {
-  document.getElementById('result-question').textContent = data.question || 'Votación';
-  document.getElementById('result-meta').textContent =
-    `${(data.total_votes||0).toLocaleString()} TOTAL VOTES`;
+    // ═══════════════════════════════════════════
+    //  END POLL
+    // ═══════════════════════════════════════════
+    async function endPoll() {
+      try {
+        const r = await fetch('/api/poll', { method: 'DELETE' });
+        if (!r.ok) {
+          const err = await r.json();
+          throw new Error(err.detail || 'Error');
+        }
+        // results come via WS poll_ended event
+        showToast('Votación finalizada', 'green');
+      } catch (err) {
+        showToast(err.message, 'red');
+      }
+    }
 
-  // chart
-  const ctx = document.getElementById('result-chart');
-  if (resultChart) { resultChart.destroy(); resultChart = null; }
-  const counts = data.counts || {};
-  const maxV = Math.max(1, ...Object.values(counts));
-  const colors = data.options.map((_, i) => (counts[i+1]||0) === maxV ? '#53FC18' : '#2a2a2a');
-  resultChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: data.options,
-      datasets: [{
-        data: data.options.map((_, i) => counts[i+1] || 0),
-        backgroundColor: colors,
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
-    options: chartOpts()
-  });
+    // ═══════════════════════════════════════════
+    //  RESULTS
+    // ═══════════════════════════════════════════
+    function renderResults(data) {
+      document.getElementById('result-question').textContent = data.question || 'Votación';
+      document.getElementById('result-meta').textContent =
+        `${(data.total_votes || 0).toLocaleString()} TOTAL VOTES`;
 
-  // distribution list
-  const total = data.total_votes || 0;
-  const distEl = document.getElementById('result-dist-list');
-  distEl.innerHTML = data.options.map((opt, i) => {
-    const cnt = counts[i+1] || 0;
-    const pct = total ? Math.round(cnt/total*100) : 0;
-    const isWinner = cnt === maxV && maxV > 0;
-    return `
+      // chart
+      const ctx = document.getElementById('result-chart');
+      if (resultChart) { resultChart.destroy(); resultChart = null; }
+      const counts = data.counts || {};
+      const maxV = Math.max(1, ...Object.values(counts));
+      const colors = data.options.map((_, i) => (counts[i + 1] || 0) === maxV ? '#53FC18' : '#2a2a2a');
+      resultChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: data.options,
+          datasets: [{
+            data: data.options.map((_, i) => counts[i + 1] || 0),
+            backgroundColor: colors,
+            borderRadius: 6,
+            borderSkipped: false,
+          }]
+        },
+        options: chartOpts()
+      });
+
+      // distribution list
+      const total = data.total_votes || 0;
+      const distEl = document.getElementById('result-dist-list');
+      distEl.innerHTML = data.options.map((opt, i) => {
+        const cnt = counts[i + 1] || 0;
+        const pct = total ? Math.round(cnt / total * 100) : 0;
+        const isWinner = cnt === maxV && maxV > 0;
+        return `
       <div class="dist-item">
         <div class="dist-top">
-          <div class="dist-label ${isWinner?'winner':''}">${opt}</div>
+          <div class="dist-label ${isWinner ? 'winner' : ''}">${opt}</div>
           <div>
             <span class="dist-pct">${pct}%</span>
             <span class="dist-count">(${cnt.toLocaleString()} votes)</span>
           </div>
         </div>
         <div class="dist-bar-bg">
-          <div class="dist-bar-fill ${isWinner?'winner':''}" style="width:${pct}%"></div>
+          <div class="dist-bar-fill ${isWinner ? 'winner' : ''}" style="width:${pct}%"></div>
         </div>
       </div>
     `;
-  }).join('');
+      }).join('');
 
-  // breakdown
-  const vbo = data.voters_by_option || {};
-  const breakEl = document.getElementById('result-breakdown');
-  breakEl.innerHTML = data.options.map((opt, i) => {
-    const voters = vbo[String(i+1)] || [];
-    const shown = voters.slice(0, 8);
-    const more = voters.length - shown.length;
-    return `
+      // breakdown
+      const vbo = data.voters_by_option || {};
+      const breakEl = document.getElementById('result-breakdown');
+      breakEl.innerHTML = data.options.map((opt, i) => {
+        const voters = vbo[String(i + 1)] || [];
+        const shown = voters.slice(0, 8);
+        const more = voters.length - shown.length;
+        return `
       <div class="breakdown-section">
         <div class="breakdown-head">${opt}</div>
         <div class="voter-chips">
           ${shown.map(v => `
             <div class="voter-chip">
-              <div class="voter-chip-av">${v.slice(0,2).toUpperCase()}</div>
+              <div class="voter-chip-av">${v.slice(0, 2).toUpperCase()}</div>
               ${v}
             </div>
           `).join('')}
@@ -1667,282 +2058,295 @@ function renderResults(data) {
         </div>
       </div>
     `;
-  }).join('');
-}
+      }).join('');
+    }
 
-// ═══════════════════════════════════════════
-//  HISTORY
-// ═══════════════════════════════════════════
-async function loadHistory() {
-  try {
-    const r = await fetch('/api/history');
-    state.historyData = await r.json();
-    renderHistory();
-    updateEngagement();
-  } catch(e) { }
-}
+    // ═══════════════════════════════════════════
+    //  HISTORY
+    // ═══════════════════════════════════════════
+    async function loadHistory() {
+      try {
+        const r = await fetch('/api/history');
+        state.historyData = await r.json();
+        renderHistory();
+        updateEngagement();
+      } catch (e) { }
+    }
 
-function renderHistory() {
-  const el = document.getElementById('history-list');
-  if (!state.historyData.length) {
-    el.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:40px 0;font-size:14px">No hay votaciones en el historial.</div>';
-    return;
-  }
+    function renderHistory() {
+      const el = document.getElementById('history-list');
+      if (!state.historyData.length) {
+        el.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:40px 0;font-size:14px">No hay votaciones en el historial.</div>';
+        return;
+      }
 
-  // Group by date
-  const groups = {};
-  [...state.historyData].reverse().forEach(p => {
-    const date = p.started_at ? new Date(p.started_at) : new Date();
-    const today = new Date();
-    const key = date.toDateString() === today.toDateString() ? 'Today'
-      : date.toLocaleDateString('es-DO', { month:'long', day:'numeric' });
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(p);
-  });
+      // Group by date
+      const groups = {};
+      [...state.historyData].reverse().forEach(p => {
+        const date = p.started_at ? new Date(p.started_at) : new Date();
+        const today = new Date();
+        const key = date.toDateString() === today.toDateString() ? 'Today'
+          : date.toLocaleDateString('es-DO', { month: 'long', day: 'numeric' });
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(p);
+      });
 
-  el.innerHTML = Object.entries(groups).map(([date, polls]) => `
+      el.innerHTML = Object.entries(groups).map(([date, polls]) => `
     <div class="history-date-group">
       <div class="history-date-label">${date}</div>
       ${polls.map(p => historyItemHtml(p)).join('')}
     </div>
   `).join('');
-}
-
-function historyItemHtml(p) {
-  const counts = p.counts || {};
-  const total = p.total_votes || 0;
-  const maxCnt = Math.max(0, ...Object.values(counts));
-  let winnerLabel = '—';
-  let winnerPct = 0;
-  Object.entries(counts).forEach(([idx, cnt]) => {
-    if (cnt === maxCnt && maxCnt > 0) {
-      const optIdx = parseInt(idx) - 1;
-      winnerLabel = (p.options || [])[optIdx] || '—';
-      winnerPct = total ? Math.round(cnt/total*100) : 0;
     }
-  });
-  const emoji = ['🗺', '🎮', '⏱', '🍣', '📊', '🎲'][Math.floor(Math.random()*6)];
-  return `
+
+    function historyItemHtml(p) {
+      const counts = p.counts || {};
+      const total = p.total_votes || 0;
+      const maxCnt = Math.max(0, ...Object.values(counts));
+      let winnerLabel = '—';
+      let winnerPct = 0;
+      Object.entries(counts).forEach(([idx, cnt]) => {
+        if (cnt === maxCnt && maxCnt > 0) {
+          const optIdx = parseInt(idx) - 1;
+          winnerLabel = (p.options || [])[optIdx] || '—';
+          winnerPct = total ? Math.round(cnt / total * 100) : 0;
+        }
+      });
+      const emoji = ['🗺', '🎮', '⏱', '🍣', '📊', '🎲'][Math.floor(Math.random() * 6)];
+      return `
     <div class="history-item" onclick="openHistoryDetail('${p.poll_id}')">
       <div class="history-item-icon">${emoji}</div>
       <div class="history-item-body">
         <div class="history-item-q">${p.question || 'Votación'}</div>
-        <div class="history-item-meta">${total.toLocaleString()} VOTES · ${p.channel||''}</div>
+        <div class="history-item-meta">${total.toLocaleString()} VOTES · ${p.channel || ''}</div>
         <div class="history-item-winner">${winnerLabel} <span class="history-item-pct">WINNER (${winnerPct}%)</span></div>
       </div>
       <div class="history-arrow">›</div>
     </div>
   `;
-}
+    }
 
-// ═══════════════════════════════════════════
-//  HISTORY DETAIL
-// ═══════════════════════════════════════════
-function openHistoryDetail(pollId) {
-  const p = state.historyData.find(x => x.poll_id === pollId);
-  if (!p) return;
-  state.detailPoll = p;
-  renderHistoryDetail(p);
-  goTo('view-history-detail');
-}
+    // ═══════════════════════════════════════════
+    //  HISTORY DETAIL
+    // ═══════════════════════════════════════════
+    function openHistoryDetail(pollId) {
+      const p = state.historyData.find(x => x.poll_id === pollId);
+      if (!p) return;
+      state.detailPoll = p;
+      renderHistoryDetail(p);
+      goTo('view-history-detail');
+    }
 
-function renderHistoryDetail(p) {
-  const date = p.started_at ? new Date(p.started_at).toLocaleString('es-DO') : '—';
-  document.getElementById('detail-label').textContent = `Canal: ${p.channel || '—'} · ${date}`;
-  document.getElementById('detail-question').textContent = p.question || 'Votación';
-  document.getElementById('detail-meta').textContent =
-    `${(p.total_votes||0).toLocaleString()} TOTAL VOTES · ${p.options?.length||0} OPCIONES`;
+    function renderHistoryDetail(p) {
+      const date = p.started_at ? new Date(p.started_at).toLocaleString('es-DO') : '—';
+      document.getElementById('detail-label').textContent = `Canal: ${p.channel || '—'} · ${date}`;
+      document.getElementById('detail-question').textContent = p.question || 'Votación';
+      document.getElementById('detail-meta').textContent =
+        `${(p.total_votes || 0).toLocaleString()} TOTAL VOTES · ${p.options?.length || 0} OPCIONES`;
 
-  const counts = p.counts || {};
-  const maxV = Math.max(1, ...Object.values(counts));
-  const total = p.total_votes || 0;
+      const counts = p.counts || {};
+      const maxV = Math.max(1, ...Object.values(counts));
+      const total = p.total_votes || 0;
 
-  // chart
-  const ctx = document.getElementById('detail-chart');
-  if (detailChart) { detailChart.destroy(); detailChart = null; }
-  detailChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: p.options || [],
-      datasets: [{
-        data: (p.options||[]).map((_, i) => counts[i+1] || 0),
-        backgroundColor: (p.options||[]).map((_, i) => (counts[i+1]||0) === maxV ? '#53FC18' : '#2a2a2a'),
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
-    options: chartOpts()
-  });
+      // chart
+      const ctx = document.getElementById('detail-chart');
+      if (detailChart) { detailChart.destroy(); detailChart = null; }
+      detailChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: p.options || [],
+          datasets: [{
+            data: (p.options || []).map((_, i) => counts[i + 1] || 0),
+            backgroundColor: (p.options || []).map((_, i) => (counts[i + 1] || 0) === maxV ? '#53FC18' : '#2a2a2a'),
+            borderRadius: 6,
+            borderSkipped: false,
+          }]
+        },
+        options: chartOpts()
+      });
 
-  // dist
-  const distEl = document.getElementById('detail-dist-list');
-  distEl.innerHTML = (p.options||[]).map((opt, i) => {
-    const cnt = counts[i+1] || 0;
-    const pct = total ? Math.round(cnt/total*100) : 0;
-    const isWinner = cnt === maxV && maxV > 0;
-    return `
+      // dist
+      const distEl = document.getElementById('detail-dist-list');
+      distEl.innerHTML = (p.options || []).map((opt, i) => {
+        const cnt = counts[i + 1] || 0;
+        const pct = total ? Math.round(cnt / total * 100) : 0;
+        const isWinner = cnt === maxV && maxV > 0;
+        return `
       <div class="dist-item">
         <div class="dist-top">
-          <div class="dist-label ${isWinner?'winner':''}">${opt}</div>
+          <div class="dist-label ${isWinner ? 'winner' : ''}">${opt}</div>
           <div><span class="dist-pct">${pct}%</span><span class="dist-count">(${cnt.toLocaleString()})</span></div>
         </div>
         <div class="dist-bar-bg">
-          <div class="dist-bar-fill ${isWinner?'winner':''}" style="width:${pct}%"></div>
+          <div class="dist-bar-fill ${isWinner ? 'winner' : ''}" style="width:${pct}%"></div>
         </div>
       </div>
     `;
-  }).join('');
+      }).join('');
 
-  // breakdown
-  const vbo = p.voters_by_option || {};
-  document.getElementById('detail-breakdown').innerHTML = (p.options||[]).map((opt, i) => {
-    const voters = vbo[String(i+1)] || [];
-    const shown = voters.slice(0, 8);
-    const more = voters.length - shown.length;
-    return `
+      // breakdown
+      const vbo = p.voters_by_option || {};
+      document.getElementById('detail-breakdown').innerHTML = (p.options || []).map((opt, i) => {
+        const voters = vbo[String(i + 1)] || [];
+        const shown = voters.slice(0, 8);
+        const more = voters.length - shown.length;
+        return `
       <div class="breakdown-section">
         <div class="breakdown-head">${opt}</div>
         <div class="voter-chips">
-          ${shown.map(v => `<div class="voter-chip"><div class="voter-chip-av">${v.slice(0,2).toUpperCase()}</div>${v}</div>`).join('')}
+          ${shown.map(v => `<div class="voter-chip"><div class="voter-chip-av">${v.slice(0, 2).toUpperCase()}</div>${v}</div>`).join('')}
           ${more > 0 ? `<div class="more-tag">+ ${more} más</div>` : ''}
           ${voters.length === 0 ? `<div style="color:var(--text-dim);font-size:13px;font-style:italic">Sin votos</div>` : ''}
         </div>
       </div>
     `;
-  }).join('');
-}
-
-function repeatPoll() {
-  if (!state.detailPoll) return;
-  const p = state.detailPoll;
-  goTo('view-create');
-  document.getElementById('poll-question').value = p.question || '';
-  const list = document.getElementById('options-list');
-  list.innerHTML = '';
-  optionCount = 0;
-  (p.options || []).forEach(opt => addOption(opt));
-}
-
-// ═══════════════════════════════════════════
-//  EXPORT CSV
-// ═══════════════════════════════════════════
-function exportCSV() {
-  const rows = [['Poll ID','Question','Channel','Total Votes','Option','Votes','Voters']];
-  (state.historyData || []).forEach(p => {
-    const vbo = p.voters_by_option || {};
-    (p.options||[]).forEach((opt, i) => {
-      const cnt = (p.counts||{})[i+1] || 0;
-      const voters = (vbo[String(i+1)] || []).join('; ');
-      rows.push([p.poll_id, p.question, p.channel, p.total_votes, opt, cnt, voters]);
-    });
-  });
-  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = 'kick_vote_history.csv';
-  a.click();
-}
-
-function exportDetailCSV() {
-  if (!state.detailPoll) return;
-  const p = state.detailPoll;
-  const rows = [['Option','Votes','Voters']];
-  const vbo = p.voters_by_option || {};
-  (p.options||[]).forEach((opt, i) => {
-    rows.push([opt, (p.counts||{})[i+1]||0, (vbo[String(i+1)]||[]).join('; ')]);
-  });
-  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = `poll_${p.poll_id}.csv`;
-  a.click();
-}
-
-// ═══════════════════════════════════════════
-//  CHART OPTIONS
-// ═══════════════════════════════════════════
-function chartOpts() {
-  return {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: '#1a1a1a',
-        titleColor: '#53FC18',
-        bodyColor: '#e8e8e8',
-        borderColor: '#2a2a2a',
-        borderWidth: 1,
-        callbacks: {
-          label: ctx => ` ${ctx.parsed.y.toLocaleString()} votos`
-        }
-      }
-    },
-    scales: {
-      x: {
-        grid: { display: false },
-        ticks: { color: '#888', font: { family: 'Barlow Condensed', size: 12, weight: '700' }, maxRotation: 30 },
-        border: { color: '#2a2a2a' }
-      },
-      y: {
-        grid: { color: '#1a1a1a', drawBorder: false },
-        ticks: { color: '#555', font: { size: 11 } },
-        border: { display: false }
-      }
+      }).join('');
     }
-  };
-}
 
-// ═══════════════════════════════════════════
-//  TOAST
-// ═══════════════════════════════════════════
-let toastTimer;
-function showToast(msg, type = '') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show' + (type ? ' ' + type : '');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
-}
-
-// ═══════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════
-(async function init() {
-  connectWS();
-  renderDefaultOptions();
-
-  // Check if session already exists
-  try {
-    const r = await fetch('/api/session');
-    const d = await r.json();
-    if (d.active && d.channel) {
-      state.channel = d.channel;
-      updateDashboard();
-      await loadHistory();
-
-      // Check if there's an active poll
-      const pr = await fetch('/api/poll');
-      const pd = await pr.json();
-      if (pd.active) {
-        state.currentPoll = pd;
-        document.getElementById('active-question').textContent = pd.question || 'Votación';
-        document.getElementById('active-sub').textContent =
-          `Canal: ${pd.channel} · Escribe el número de tu opción en el chat`;
-        document.getElementById('active-total').textContent = (pd.total_votes||0).toLocaleString();
-        initActiveChart(pd.options || []);
-        if (pd.counts) {
-          activeChart.data.datasets[0].data = pd.options.map((_, i) => (pd.counts[i+1]||0));
-          activeChart.update('none');
-        }
-        if (pd.recent_voters) renderRecentVoters(pd.recent_voters);
-        goTo('view-active');
-        return;
-      }
-      goTo('view-dashboard');
+    function repeatPoll() {
+      if (!state.detailPoll) return;
+      const p = state.detailPoll;
+      goTo('view-create');
+      document.getElementById('poll-question').value = p.question || '';
+      const list = document.getElementById('options-list');
+      list.innerHTML = '';
+      optionCount = 0;
+      (p.options || []).forEach(opt => addOption(opt));
     }
-  } catch(e) { }
-})();
-</script>
+
+    // ═══════════════════════════════════════════
+    //  EXPORT CSV
+    // ═══════════════════════════════════════════
+    function exportCSV() {
+      const rows = [['Poll ID', 'Question', 'Channel', 'Total Votes', 'Option', 'Votes', 'Voters']];
+      (state.historyData || []).forEach(p => {
+        const vbo = p.voters_by_option || {};
+        (p.options || []).forEach((opt, i) => {
+          const cnt = (p.counts || {})[i + 1] || 0;
+          const voters = (vbo[String(i + 1)] || []).join('; ');
+          rows.push([p.poll_id, p.question, p.channel, p.total_votes, opt, cnt, voters]);
+        });
+      });
+      const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const a = document.createElement('a');
+      a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+      a.download = 'kick_vote_history.csv';
+      a.click();
+    }
+
+    function exportDetailCSV() {
+      if (!state.detailPoll) return;
+      const p = state.detailPoll;
+      const rows = [['Option', 'Votes', 'Voters']];
+      const vbo = p.voters_by_option || {};
+      (p.options || []).forEach((opt, i) => {
+        rows.push([opt, (p.counts || {})[i + 1] || 0, (vbo[String(i + 1)] || []).join('; ')]);
+      });
+      const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const a = document.createElement('a');
+      a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+      a.download = `poll_${p.poll_id}.csv`;
+      a.click();
+    }
+
+    // ═══════════════════════════════════════════
+    //  CHART OPTIONS
+    // ═══════════════════════════════════════════
+    function chartOpts() {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            color: '#53FC18',
+            font: { family: 'Barlow Condensed', weight: 'bold', size: 16 },
+            formatter: (value, context) => {
+              const dataArr = context.dataset.data;
+              const total = dataArr.reduce((a, b) => a + b, 0);
+              if (total === 0 || value === 0) return '';
+              return Math.round((value / total) * 100) + '%';
+            }
+          },
+          tooltip: {
+            backgroundColor: '#1a1a1a',
+            titleColor: '#53FC18',
+            bodyColor: '#e8e8e8',
+            borderColor: '#2a2a2a',
+            borderWidth: 1,
+            callbacks: {
+              label: ctx => ` ${ctx.parsed.y.toLocaleString()} votos`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: '#888', font: { family: 'Barlow Condensed', size: 12, weight: '700' }, maxRotation: 30 },
+            border: { color: '#2a2a2a' }
+          },
+          y: {
+            grid: { color: '#1a1a1a', drawBorder: false },
+            ticks: { color: '#555', font: { size: 11 } },
+            border: { display: false }
+          }
+        }
+      };
+    }
+
+    // ═══════════════════════════════════════════
+    //  TOAST
+    // ═══════════════════════════════════════════
+    let toastTimer;
+    function showToast(msg, type = '') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = 'toast show' + (type ? ' ' + type : '');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+    }
+
+    // ═══════════════════════════════════════════
+    //  INIT
+    // ═══════════════════════════════════════════
+    (async function init() {
+      connectWS();
+      renderDefaultOptions();
+
+      // Check if session already exists
+      try {
+        const r = await fetch('/api/session');
+        const d = await r.json();
+        if (d.active && d.channel) {
+          state.channel = d.channel;
+          updateDashboard();
+          await loadHistory();
+
+          // Check if there's an active poll
+          const pr = await fetch('/api/poll');
+          const pd = await pr.json();
+          if (pd.active) {
+            state.currentPoll = pd;
+            document.getElementById('active-question').textContent = pd.question || 'Votación';
+            document.getElementById('active-sub').textContent =
+              `Canal: ${pd.channel} · Escribe el número de tu opción en el chat`;
+            document.getElementById('active-total').textContent = (pd.total_votes || 0).toLocaleString();
+            initActiveChart(pd.options || []);
+            if (pd.counts) {
+              activeChart.data.datasets[0].data = pd.options.map((_, i) => (pd.counts[i + 1] || 0));
+              activeChart.update('none');
+            }
+            if (pd.recent_voters) renderRecentVoters(pd.recent_voters);
+            goTo('view-active');
+            return;
+          }
+          goTo('view-dashboard');
+        }
+      } catch (e) { }
+    })();
+  </script>
 </body>
+
 </html>
